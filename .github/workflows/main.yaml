@@ -1,0 +1,36 @@
+name: main
+
+on: 
+  push:
+    branches:
+      - '**'
+  workflow_dispatch:
+
+env:
+  GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
+  HOMEBREW_NO_ENV_HINTS: 1
+
+jobs:
+  tests:
+    runs-on: ${{ matrix.os }}
+    defaults:
+      run:
+        shell: bash
+    strategy:
+      fail-fast: true
+      matrix:
+        os: [ macos-latest, macos-10.15, ubuntu-latest, ubuntu-18.04 ]
+    steps:
+      - uses: actions/checkout@main
+        with:
+          fetch-depth: 0
+      - name: Set up Homebrew
+        uses: Homebrew/actions/setup-homebrew@master
+      - run: make tests
+
+  tag:
+    needs: [ tests ]
+    runs-on: ubuntu-latest
+    steps:
+      - id: tag
+        uses: j5pu/actions/tag@main
