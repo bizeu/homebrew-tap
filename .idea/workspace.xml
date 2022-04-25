@@ -3,7 +3,15 @@
   <component name="AutoImportSettings">
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
+  <component name="ChangeListManager">
+    <list default="true" id="763278c5-57a7-4183-8f89-8c0edd351bf3" name="Changes" comment="" />
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
   <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
     <option name="ROOT_SYNC" value="DONT_SYNC" />
   </component>
   <component name="JsBowerSettings">
@@ -11,29 +19,36 @@
     <bower-package value="" />
     <bower.json value="" />
   </component>
+  <component name="MacroExpansionManager">
+    <option name="directoryName" value="akzl2pps" />
+  </component>
+  <component name="MarkdownSettingsMigration">
+    <option name="stateVersion" value="1" />
+  </component>
   <component name="NamedScopeManager">
     <order>
       <scope name="Python" />
     </order>
   </component>
+  <component name="ProjectId" id="28GrNcLkqVziDoPoUSAhfFrp1rE" />
   <component name="ProjectViewState">
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showExcludedFiles" value="false" />
     <option name="showLibraryContents" value="true" />
     <option name="showMembers" value="true" />
   </component>
-  <component name="PropertiesComponent">
-    <property name="NewWatcherDialog.advanced.open" value="true" />
-    <property name="node.js.path.for.package.eslint" value="project" />
-    <property name="node.js.path.for.package.jscs" value="project" />
-    <property name="node.js.path.for.package.standard" value="project" />
-    <property name="node.js.path.for.package.stylelint" value="project" />
-    <property name="node.js.selected.package.eslint" value="(autodetect)" />
-    <property name="node.js.selected.package.jscs" value="" />
-    <property name="node.js.selected.package.standard" value="" />
-    <property name="node.js.selected.package.stylelint" value="/usr/local/lib/node_modules/stylelint" />
-    <property name="settings.editor.selected.configurable" value="com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable" />
-  </component>
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "RunOnceActivity.OpenProjectViewOnStart": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "WebServerToolWindowFactoryState": "false",
+    "last_opened_file_path": "/usr/local/Homebrew/Library/Taps/bizeu/homebrew-tap",
+    "node.js.detected.package.eslint": "true",
+    "node.js.selected.package.eslint": "(autodetect)",
+    "nodejs_package_manager_path": "npm",
+    "vue.rearranger.settings.migration": "true"
+  }
+}]]></component>
   <component name="PyConsoleOptionsProvider">
     <option name="myPythonConsoleState">
       <console-settings custom-start-script="import sys; print('Python %s on %s' % (sys.version, sys.platform))&#10;sys.path.extend([WORKING_DIR_AND_PYTHON_PATHS])&#10;try:&#10;    import rich.pretty&#10;    import rich.console&#10;    import rich &#10;    from rich import inspect &#10;    from functools import partial &#10;    ins = partial(rich.inspect, docs=False, methods=True, private=True)&#10;    rinspect  = rich.inspect&#10;    console = rich.console.Console(color_system='256')&#10;    cp = console.print&#10;    rich.pretty.install(console=console, expand_all=True)&#10;except ModuleNotFoundError:&#10;    pass&#10;try:&#10;    from ghapi.all import GhApi&#10;    ghapi = GhApi()&#10;except ModuleNotFoundError:&#10;    pass&#10;if hasattr(__builtins__, '__IPYTHON__'):&#10;    '%rehashx'&#10;" is-module-sdk="true">
@@ -266,7 +281,7 @@
       <option name="INDEPENDENT_SCRIPT_WORKING_DIRECTORY" value="true" />
       <option name="SCRIPT_WORKING_DIRECTORY" value="" />
       <option name="INDEPENDENT_INTERPRETER_PATH" value="true" />
-      <option name="INTERPRETER_PATH" value="/usr/local/bin/bash" />
+      <option name="INTERPRETER_PATH" value="$PROJECT_DIR$/../../../../../bin/bash" />
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="EXECUTE_SCRIPT_FILE" value="true" />
       <envs />
@@ -555,6 +570,10 @@
       <option name="_new_targetType" value="&quot;PATH&quot;" />
       <method v="2" />
     </configuration>
+  </component>
+  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="1" Folder0="$USER_HOME$/macdev" CustomDictionaries="1" CustomDictionary0="$USER_HOME$/macdev/spanish.dic" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="3" />
   </component>
   <component name="VcsManagerConfiguration">
     <option name="CHECK_NEW_TODO" value="false" />
