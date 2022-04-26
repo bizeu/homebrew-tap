@@ -1,22 +1,13 @@
 # typed: false
 # frozen_string_literal: true
 
-require "formulary"
-require "pkg_version"
 require "tap"
 require 'utils/github'
 require 'utils/github/api'
 
 class Header
 
-  # When a release is created: 'gh release create $(svu) --generate-notes'
-  # @return [Hash] 
-  def _release
-    @_release ||= GitHub.get_latest_release(user, name)
-  rescue GitHub::API::HTTPNotFoundError
-    @_release = nil
-  end
-
+  # @return [Hash]
   def _repo 
     @_repo ||= GitHub.repository(user, name)
   rescue GitHub::API::HTTPNotFoundError
@@ -25,7 +16,7 @@ class Header
   
   def _sha256
     resource = Resource.new(name)
-    resource.url(url) 
+    resource.url(url_version[:url])
     if resource.downloader.cached_location.exist?
       download = resource.downloader.cached_location
     else
@@ -35,12 +26,27 @@ class Header
     download.sha256
   end
 
-  # When a tag is created (and not release)
-  # @return [Hash] 
+  # When a tag is created
+  # When a release is created: 'gh release create $(svu) --generate-notes'
+  # @return [Hash]
   def _tag
     @_tag ||= GitHub::API.open_rest(GitHub.url_to("repos", user, name, "tags"))[0]
   rescue GitHub::API::HTTPNotFoundError, Error
     @_tag = nil
+  end
+  
+  # which has the latest version from release or tag (if there was a release, but latter was tagged only)
+  def _url_version
+    if _tag.nil?
+      opoo "No tag in repository, using default tarball url and v0.0.0, use --HEAD or tag to be updated: #{homepage}"
+      suffix = "tarball/#{default_branch}"
+      version = "v0.0.0"
+    else
+      version = _tag["name"]
+      suffix = "archive/#{version}.tar.gz"
+    end
+
+    { url: "#{homepage}/#{suffix}", version: version, }
   end
 
   # @param [String] file
@@ -58,7 +64,7 @@ class Header
   def desc
     @desc ||= _repo["description"]
   end
-  
+
   # The fully-qualified name of the {Formula}.
   # For core formula it's the same as {#name}.
   # e.g. `homebrew/tap-name/this-formula`
@@ -91,34 +97,22 @@ class Header
   def private?
     @private ||= _repo["private"]
   end
-        
-  def release_url   
-    @release_url ||= _release.nil? ? nil : _release["tarball_url"]
-  end
-
-  def release_version
-    @release_version ||= _release.nil? ? nil : _release["tag_name"]
-  end
 
   def sha256
     @sha256 ||= _sha256
   end
 
-  def tag_url   
-    @tag_url ||= _tag.nil? ? nil : _tag["tarball_url"]
-  end
-
-  def tag_version
-    @tag_version ||= _tag.nil? ? nil : _tag["name"]
-  end
-  
   # Instance of {Tap} from {#file}.
   def tap 
     @tap ||= Tap.from_path(@file)
   end
   
   def url
-    @url ||= release_url || tag_url || (odie "Tag the repository or use --HEAD: #{homepage}" if !head_only?)
+    @url ||= url_version[:url]
+  end
+
+  def url_version
+    @url_version ||= _url_version
   end
 
   # The user name of the {Tap} from {#file}. 
@@ -128,7 +122,7 @@ class Header
   end
   
   def version
-    @version ||= release_version || tag_version || (odie "Tag the repository or use --HEAD: #{homepage}" if !head_only?)
+    @version ||= url_version[:version]
   end
 
   def hash
@@ -142,11 +136,7 @@ class Header
       license: license,
       name: name,
       private?: private?,
-      release_url: release_url,
-      release_version: release_version,
       sha256: sha256,
-      tag_url: tag_url,
-      tag_version: tag_version,
       tap: tap.to_s,
       url: url,
       user: user,

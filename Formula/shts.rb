@@ -1,9 +1,7 @@
 # typed: false
 # frozen_string_literal: true
-require "#{ENV["HOMEBREW_LIBRARY"]}/Taps/j5pu/homebrew-cmd/cmd/taps"
-require_relative '../../../j5pu/homebrew-cmd/cmd/taps'
-require_relative '../lib/header'
 
+require_relative '../lib/header'
 
 class Shts < Formula
   header = Header.new(__FILE__)
@@ -22,7 +20,11 @@ class Shts < Formula
   depends_on "bats-core/bats-core/bats-assert"
   depends_on "bats-core/bats-core/bats-file"
   depends_on "bats-core/bats-core/bats-support"
-  depends_on "parallel" if OS.mac?
+  
+  if OS.mac?
+    depends_on "gh"
+    depends_on "parallel"
+  end
   
   link_overwrite "bin/bats"
   
@@ -35,6 +37,11 @@ class Shts < Formula
     bash_completion.install Dir["etc/bash_completion.d/*"]
   end
 
+  # TODO: aquí lo dejo
+  def post_install
+    oh1 "credential-gh"
+  end
+  
   test do
     system "#{HOMEBREW_PREFIX}/bin/#{name}", "--help"
   end

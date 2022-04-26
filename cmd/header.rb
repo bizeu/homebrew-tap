@@ -4,6 +4,7 @@
 require 'cli/parser'
 require 'formulary'
 require 'tap'
+require 'version'
 require_relative '../lib/header'
 
 module Homebrew
