@@ -2,6 +2,7 @@
 # frozen_string_literal: true
 
 require 'cli/parser'
+require "completions"
 require 'formulary'
 require 'tap'
 require 'version'
@@ -31,6 +32,7 @@ module Homebrew
   def header
     args = header_args.parse
     file = args.no_named? ? Tap.from_path(__FILE__).formula_files[0] : Formulary.resolve(args.named.first).path
+    Completions.link! unless Completions.link_completions?
     puts JSON.pretty_generate(Header.new(file).hash)
   end
 end
