@@ -7,7 +7,8 @@ class BatsBash < Formula
   url "https://github.com/j5pu/bats.bash/archive/refs/tags/v0.0.16.tar.gz"
   sha256 "e3c0a6a48c58c26d3945e6cb95c3a71e4f5d1c7e617666b21c65219b9318ae52"
   license "MIT"
-
+  head "https://github.com/j5pu/bats.bash", branch: "main"
+  
   depends_on "bash"
   depends_on "bash-completion@2"
   depends_on "bats-core"
