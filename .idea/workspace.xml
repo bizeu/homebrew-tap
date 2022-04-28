@@ -37,18 +37,18 @@
     <option name="showLibraryContents" value="true" />
     <option name="showMembers" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "RunOnceActivity.OpenProjectViewOnStart": "true",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "WebServerToolWindowFactoryState": "false",
-    "last_opened_file_path": "/usr/local/Homebrew/Library/Taps/bizeu/homebrew-tap",
-    "node.js.detected.package.eslint": "true",
-    "node.js.selected.package.eslint": "(autodetect)",
-    "nodejs_package_manager_path": "npm",
-    "vue.rearranger.settings.migration": "true"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;WebServerToolWindowFactoryState&quot;: &quot;false&quot;,
+    &quot;last_opened_file_path&quot;: &quot;/usr/local/Homebrew/Library/Taps/bizeu/homebrew-tap&quot;,
+    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   }
-}]]></component>
+}</component>
   <component name="PyConsoleOptionsProvider">
     <option name="myPythonConsoleState">
       <console-settings custom-start-script="import sys; print('Python %s on %s' % (sys.version, sys.platform))&#10;sys.path.extend([WORKING_DIR_AND_PYTHON_PATHS])&#10;try:&#10;    import rich.pretty&#10;    import rich.console&#10;    import rich &#10;    from rich import inspect &#10;    from functools import partial &#10;    ins = partial(rich.inspect, docs=False, methods=True, private=True)&#10;    rinspect  = rich.inspect&#10;    console = rich.console.Console(color_system='256')&#10;    cp = console.print&#10;    rich.pretty.install(console=console, expand_all=True)&#10;except ModuleNotFoundError:&#10;    pass&#10;try:&#10;    from ghapi.all import GhApi&#10;    ghapi = GhApi()&#10;except ModuleNotFoundError:&#10;    pass&#10;if hasattr(__builtins__, '__IPYTHON__'):&#10;    '%rehashx'&#10;" is-module-sdk="true">
@@ -92,6 +92,7 @@
       <option name="allFeatures" value="false" />
       <option name="emulateTerminal" value="false" />
       <option name="withSudo" value="false" />
+      <option name="buildTarget" value="REMOTE" />
       <option name="backtrace" value="SHORT" />
       <envs />
       <option name="isRedirectInput" value="false" />
