@@ -35,13 +35,9 @@ class Shts < Formula
   def install
     bin.install Dir["bin/*"]
     bash_completion.install Dir["etc/bash_completion.d/*"]
+    share.install Dir["share/*"]
   end
 
-  # TODO: aquí lo dejo
-  def post_install
-    oh1 "credential-gh"
-  end
-  
   test do
     system "#{HOMEBREW_PREFIX}/bin/#{name}", "--help"
   end
