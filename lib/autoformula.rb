@@ -25,6 +25,7 @@ class AutoFormula < Formula
   end
 
   def post_install
+    # TODO: no se si es "autoremove" o "autoremove.autoremove", o hacer "include autoremove" en las clase
     autoremove
   end
 end

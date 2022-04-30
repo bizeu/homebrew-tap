@@ -1,6 +1,7 @@
 # typed: false
 # frozen_string_literal: true
 
+require_relative '../cmd/compgen'
 require_relative '../lib/autoformula'
 
 class PathEnv < AutoFormula
@@ -16,8 +17,10 @@ class PathEnv < AutoFormula
     share.install Dir["share/*"]
   end
   
+  # TODO: no se si es "compgen" o "compgen.compgen", o hacer "include compgen" en las clase
   def post_install
     ohai "post install: #{name}"
+    compgen
     super(post_install)
   end
   
