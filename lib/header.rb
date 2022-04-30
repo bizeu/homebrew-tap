@@ -6,14 +6,16 @@ require 'utils/github'
 require 'utils/github/api'
 
 class Header
+  extend T::Sig
 
-  # @return [Hash]
+  sig { returns(Hash) }
   def _repo 
     @_repo ||= GitHub.repository(user, name)
   rescue GitHub::API::HTTPNotFoundError
     odie "Repository #{user}/#{name} not found."
   end
   
+  sig { returns(String) }
   def _sha256
     resource = Resource.new(name)
     resource.url(url_version[:url])
@@ -28,7 +30,7 @@ class Header
 
   # When a tag is created
   # When a release is created: 'gh release create $(svu) --generate-notes'
-  # @return [Hash]
+  sig { returns(T.nilable(Hash)) }
   def _tag
     @_tag ||= GitHub::API.open_rest(GitHub.url_to("repos", user, name, "tags"))[0]
   rescue GitHub::API::HTTPNotFoundError, Error
@@ -36,6 +38,7 @@ class Header
   end
   
   # which has the latest version from release or tag (if there was a release, but latter was tagged only)
+  sig { returns(T::Hash[String, T::Bool]) }
   def _url_version
     if _tag.nil?
       opoo "No tag in repository, using default tarball url and v0.0.0, use --HEAD or tag to be updated: #{homepage}"
@@ -53,14 +56,17 @@ class Header
   # It's the same as {#name} in {Formula}.
   attr_reader :file
 
+  sig { params(file: T.nilable(String)).returns(Header) }
   def initialize(file = nil)
     @file = Pathname.new(file || __FILE__)
   end
   
+  sig { returns(String) }
   def branch
     @branch ||= _repo["default_branch"]
   end
 
+  sig { returns(String) }
   def desc
     @desc ||= _repo["description"]
   end
@@ -68,20 +74,24 @@ class Header
   # The fully-qualified name of the {Formula}.
   # For core formula it's the same as {#name}.
   # e.g. `homebrew/tap-name/this-formula`
+  sig { returns(String) }
   def full_name 
     @full_name ||= tap.formula_file_to_name(@file)
   end
   
   # Remote URL from {#github} adding ".git".
+  sig { returns(String) }
   def head
     @head ||= _repo["clone_url"]
   end
 
   # GitHub URL of the {Formula} from {#user} and {#name}.
+  sig { returns(String) }
   def homepage
     @homepage ||= _repo["html_url"]
   end
 
+  sig { returns(String) }
   def license
     @license ||= _repo["license"]["spdx_id"]
   end
@@ -89,42 +99,51 @@ class Header
   # The name of the {Formula} from basename of {#file}. 
   # It is the same as {#name} of the {Formula}.
   # e.g. `this-formula`
+  sig { returns(String) }
   def name
     odie "#{tap.full_name} not supported: #{full_name}" if tap.core_tap?
     @name ||= full_name.split("/").last
   end
 
+  sig { returns(T::Boolean) }
   def private?
     @private ||= _repo["private"]
   end
 
+  sig { returns(String) }
   def sha256
     @sha256 ||= _sha256
   end
 
   # Instance of {Tap} from {#file}.
+  sig { returns(Tap) }
   def tap 
     @tap ||= Tap.from_path(@file)
   end
   
+  sig { returns(String) }
   def url
     @url ||= url_version[:url]
   end
 
+  sig { returns(String) }
   def url_version
     @url_version ||= _url_version
   end
 
   # The user name of the {Tap} from {#file}. 
   # Usually, it's the GitHub username of the {Tap}'s remote repository.
+  sig { returns(String) }
   def user
     @user ||= tap.user
   end
   
+  sig { returns(String) }
   def version
     @version ||= url_version[:version]
   end
 
+  sig { returns(T::Hash[String, String]) }
   def hash
     {
       branch: branch,

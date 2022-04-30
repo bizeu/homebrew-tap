@@ -2,8 +2,9 @@
 # frozen_string_literal: true
 
 require_relative '../lib/header'
+require_relative 'pathenv'
 
-class Shts < Formula
+class Bats < Formula
   header = Header.new(__FILE__)
 
   desc header.desc
@@ -20,6 +21,7 @@ class Shts < Formula
   depends_on "bats-core/bats-core/bats-assert"
   depends_on "bats-core/bats-core/bats-file"
   depends_on "bats-core/bats-core/bats-support"
+  depends_on PathEnv.full_name
   
   if OS.mac?
     depends_on "gh"
