@@ -1,6 +1,7 @@
 # typed: false
 # frozen_string_literal: true
 
+require "date"
 require "tap"
 require 'utils/github'
 require 'utils/github/api'
@@ -41,9 +42,8 @@ class Header
   sig { returns(T::Hash[String, T::Bool]) }
   def _url_version
     if _tag.nil?
-      opoo "No tag in repository, using default tarball url and v0.0.0, use --HEAD or tag to be updated: #{homepage}"
-      suffix = "tarball/#{default_branch}"
-      version = "v0.0.0"
+      version = "v0.0.0-alpha+#{sha}"
+      suffix = "archive/#{sha}.tar.gz"
     else
       version = _tag["name"]
       suffix = "archive/#{version}.tar.gz"
@@ -58,7 +58,7 @@ class Header
 
   sig { params(file: T.nilable(String)).returns(Header) }
   def initialize(file = nil)
-    @file = Pathname.new(file || __FILE__)
+    @file = Pathname.new(file || caller(1).first.split(":")[0])
   end
   
   sig { returns(String) }
@@ -71,6 +71,13 @@ class Header
     @desc ||= _repo["description"]
   end
 
+  def fetch_main
+    resource = Resource.new(name)
+    resource.url(url) 
+    resource.downloader.shutup!
+    download = resource.fetch(verify_download_integrity: false)    
+  end
+  
   # The fully-qualified name of the {Formula}.
   # For core formula it's the same as {#name}.
   # e.g. `homebrew/tap-name/this-formula`
@@ -83,6 +90,11 @@ class Header
   sig { returns(String) }
   def head
     @head ||= _repo["clone_url"]
+  end
+
+  sig { returns(T::Boolean) }
+  def head_only?
+    @head_only ||= _tag.nil?
   end
 
   # GitHub URL of the {Formula} from {#user} and {#name}.
@@ -110,6 +122,10 @@ class Header
     @private ||= _repo["private"]
   end
 
+  def sha 
+    @sha ||= GitHub::API.open_rest(GitHub.url_to("repos", user, name, "commits", branch))["sha"][0..6]
+  end 
+  
   sig { returns(String) }
   def sha256
     @sha256 ||= _sha256
@@ -151,6 +167,7 @@ class Header
       file: file.to_s,
       full_name: full_name,
       head: head,
+      head_only?: head_only?,
       homepage: homepage,
       license: license,
       name: name,

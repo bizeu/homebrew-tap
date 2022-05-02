@@ -31,7 +31,11 @@ module Homebrew
     Commands.rebuild_commands_completion_list
     commands = Commands.commands(external: true, aliases: true).sort
     for i in [COMPLETIONS_BASH, COMPLETIONS_ZSH]
-      (i).atomic_write Completions.generate_bash_completion_file(commands)
+      begin
+        ohai((i).atomic_write Completions.generate_bash_completion_file(commands))
+      rescue
+        nil
+      end
       ohai "Generated: #{i}" if compgen_args.parse.verbose?
     end
     line = "    #{__method__.to_s}) _brew_#{__method__.to_s} ;;"
