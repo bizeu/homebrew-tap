@@ -38,6 +38,7 @@ class Shbin < Formula
   end
   
   def install
+    bash_completion.install Dir["etc/bash_completion.d/*"]
     bin.install Dir["bin/*"]
     etc.install Dir["etc/*"]
     share.install Dir["share/*"]
