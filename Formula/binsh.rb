@@ -4,7 +4,7 @@
 require_relative '../cmd/compgen'
 require_relative '../lib/header'
 
-class Shbin < Formula
+class Binsh < Formula
   header = Header.new()
 
   desc header.desc
