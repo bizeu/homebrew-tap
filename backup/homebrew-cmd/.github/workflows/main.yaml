@@ -1,0 +1,48 @@
+name: tag
+
+on:
+  push:
+    branches:
+      - '**'
+  workflow_dispatch:
+
+
+env:
+  GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
+
+jobs:
+  setup:
+    runs-on: ubuntu-latest
+    outputs:
+      matrix: ${{ steps.taps.outputs.name }}
+    steps:
+      - uses: actions/checkout@v3
+      - uses: Homebrew/actions/setup-homebrew@master
+      - run: |
+          brew tap ${GITHUB_REPOSITORY/homebrew-/}
+      - id: taps
+        run: !
+          echo "::set-output name=name::$(brew taps --json)"
+  tests:
+    needs: setup
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: true
+      matrix:
+        os: [ macos-latest, macos-10.15, ubuntu-latest, ubuntu-18.04]
+        taps: ${{fromJSON(needs.setup.outputs.name}}
+    steps:
+      - uses: actions/checkout@v3
+      - uses: Homebrew/actions/setup-homebrew@master
+      - run: |
+          brew tap ${GITHUB_REPOSITORY/homebrew-/}
+      - run: |
+          echo "${{matrix.os}}"
+          echo "${{matrix.taps}}"
+      - run: ./tests
+      - run: brew taps --help
+  tag:
+    needs: tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: j5pu/actions/tag@main

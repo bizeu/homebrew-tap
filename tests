@@ -1,0 +1,124 @@
+#!/usr/bin/env bash
+# shellcheck disable=SC2064
+
+set -eu
+set -o pipefail
+set -o errtrace
+
+. /Users/j5pu/secrets/bin/secrets.sh
+
+tmp="$(mktemp)"
+exec 19>"${tmp}"
+export BASH_XTRACEFD=19
+trap "set +x; >&2 echo -n \$BASH_COMMAND:; >&2 caller 0; >&2 cat ${tmp}" ERR
+trap "clean" EXIT
+
+user="theseal"
+url="$(git config remote.origin.url | sed 's/homebrew-//')"
+this="$(basename "$(dirname "${url}")")/$(basename "${url}" .git)"
+
+all() {
+  brew all --help >/dev/null
+}
+
+clean() {
+  local tap
+  while read -r tap; do
+    [ ! "${tap}" ] || brew untap --force "${tap}"
+  done < <(names)
+  brew cleanup 2>&1 | grep -v "Warning" || true
+  brew autoremove
+  rm -rf "$(directory)"
+}
+
+directory() {
+  echo "$(brew --repository)/Library/Taps/${user}"
+}
+
+formulas() {
+  brew formulas --help >/dev/null
+  brew formulas caarlos0 | grep "^caarlos0/tap/svu$" >&19
+  brew formulas caarlos0/tap --json | grep "[\"caarlos0/tap/svu\"]" >&19
+  brew formulas caarlos0 --all --json | tr "," "\n" | grep -v "\"caarlos0/tap/svu\"" >&19
+
+  brew formulas "${this}" -r
+  test -d "$(brew --repository "${this}")"
+}
+
+names() {
+  [ ! -d "$(directory)" ] || find "$(directory)" \
+    -mindepth 1 -maxdepth 1 -type d -exec basename "{}" \; | sed "s|homebrew-|${user}/|g"
+}
+
+taps() {
+  set -x
+  clean &>/dev/null
+  brew taps --help >/dev/null
+
+  brew taps | grep "${this}" >&19
+
+  brew taps caarlos0 --tap --quiet
+  brew reinstall --quiet caarlos0/tap/svu >&19 2>&19
+  brew taps caarlos0 | grep "caarlos0/tap" >&19
+  brew taps --all | grep -v "${this}" | grep "/" >&19
+  brew taps --all osrf/simulation | grep "^osrf/" >&19
+}
+
+total() {
+  local formulas taps
+  taps="$(brew taps "${user}" | grep -c "${user}/")"
+  formulas="$(brew formulas "${user}" --all | grep -c -E "${user}/.*/.*")"  # Includes Casks has one per tap
+  test "$taps" -gt 1
+  test "$formulas" -gt 1
+  if [ "$(uname -s)" = "Darwin" ]; then
+    test "$taps" -eq "$formulas"
+  fi
+}
+
+user() {
+  test -z "$(brew taps "${user}")"
+
+  brew tap "${user}/ssh-askpass"
+  test "$(brew taps "${user}" | grep -c "${user}/")" -eq 1
+
+  test "$(brew taps "${user}" --all | grep -c "${user}/")" -gt 1
+
+  clean
+
+  brew taps "${user}" --tap
+  test "$(brew taps "${user}" | grep -c "${user}/")" -gt 1
+  brew taps "${user}/ssh-askpass" -p | grep "$(brew --repository "${user}/ssh-askpass")"
+
+  clean
+
+  brew formulas "${user}/ssh-askpass" --install
+  test "$(brew taps "${user}" | grep -c "${user}/")" -eq 1
+  test "$(brew formulas "${user}/ssh-askpass" | grep -c -E "${user}/.*/.*")" -eq 1
+  test "$(brew formulas "${user}" --all | grep -c -E "${user}/.*/.*")" -gt 1
+
+  brew formulas "${user}/ssh-askpass" --uninstall
+  test -z "$(brew taps "${user}")"
+  test -z "$(brew formulas "${user}")"
+
+  brew formulas "${user}" --install --all
+  total
+
+  brew formulas "${user}/ssh-askpass" --uninstall --all
+  test -z "$(brew taps "${user}")"
+  test -z "$(brew formulas "${user}")"
+
+  brew all "${user}"
+  total
+
+  brew all "${user}" -r
+  test -z "$(brew taps "${user}")"
+  test -z "$(brew formulas "${user}")"
+}
+
+main() {
+  taps
+  formulas
+  user
+}
+
+main "$@"

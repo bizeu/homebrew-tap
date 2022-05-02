@@ -2,7 +2,7 @@
 
 [![Build Status](https://github.com/bizeu/homebrew-tap/workflows/main/badge.svg)](https://github.com/bizeu/homebrew-tap/actions/workflows/main.yaml)
 
- Homebrew tap for development .
+Homebrew tap for development.
 
 ## Formulas
 <!-- project_table_start -->
