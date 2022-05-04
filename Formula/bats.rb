@@ -23,7 +23,7 @@ class Bats < Formula
   depends_on "bats-core/bats-core/bats-assert"
   depends_on "bats-core/bats-core/bats-file"
   depends_on "bats-core/bats-core/bats-support"
-#   ohai Binsh.header
+  ohai Binsh.h
 #   depends_on Binsh.header.full_name
   
   if OS.mac?

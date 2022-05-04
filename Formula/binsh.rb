@@ -5,6 +5,7 @@ require_relative '../cmd/compgen'
 require_relative '../lib/header'
 
 class Binsh < Formula
+  @@h = Header.new()
   header = Header.new()
 
   desc header.desc
