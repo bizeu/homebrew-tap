@@ -19,9 +19,10 @@ class Binsh < Formula
   depends_on "bash"
   depends_on "bash-completion@2"
   depends_on "bats-core"
+  depends_on "direnv"
   depends_on "gh"
   depends_on "git"
-  depends_on "direnv"
+  depends_on "grc"
   depends_on "bats-core/bats-core/bats-assert"
   depends_on "bats-core/bats-core/bats-file"
   depends_on "bats-core/bats-core/bats-support"
@@ -57,6 +58,10 @@ class Binsh < Formula
     rescue
       nil
     end
+    grc = Formula["grc"]
+    grc.keg.make_relative_symlink(etc/"grc.sh", etc/"profile.d/grc.sh")
+    ohai "hola"
+    inreplace "#{grc.pkgshare}/conf.dockerps" "on_blue", "blue"
   end
   
   test do
