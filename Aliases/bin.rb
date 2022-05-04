@@ -1,1 +1,1 @@
-./binsh.rb
+../Formula/binsh.rb
