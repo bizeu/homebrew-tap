@@ -26,6 +26,7 @@ class Bats < Formula
   
   if OS.mac?
     depends_on "parallel"
+    depends_on cask: "pycharm", quarantine: false
   end
 
   link_overwrite "bin/bats"

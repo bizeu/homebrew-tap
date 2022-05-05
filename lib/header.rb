@@ -3,17 +3,27 @@
 
 require "date"
 require "tap"
+require "uri"
 require 'utils/github'
 require 'utils/github/api'
 
 class Header
   extend T::Sig
 
-  sig { returns(Hash) }
+  # Append Path to Api Repos URL for Repository Name
+  # @param key [String] @_repos key
+  # @param subroutes [String] subroutes to add to value from @_repos
+  sig { returns(URI) }
+  def _append(key, *subroutes)
+    URI.parse([_repo[key], *subroutes].join("/"))
+  end
+  
+  # Api Repos Response for Repository Name
+  sig { returns(T.nilable(T::Hash)) }
   def _repo 
-    @_repo ||= GitHub.repository(user, name)
+    @_repo ||= T.nilable(GitHub.repository(user, name))
   rescue GitHub::API::HTTPNotFoundError
-    odie "Repository #{user}/#{name} not found."
+    odie "Repository #{user}/#{name} not found, private?: #{private?}"
   end
   
   sig { returns(String) }
@@ -29,13 +39,20 @@ class Header
     download.sha256
   end
 
+  # API Repository Tags
+  sig { returns(T::Array[T::Hash]) }
+  def _tags
+    @_tags ||= GitHub::API.open_rest(__append "tags"))
+  rescue GitHub::API::HTTPNotFoundError, Error
+    @_tags = nil
+  end
+  
+  # Latest Repository Tag Hash from API
   # When a tag is created
   # When a release is created: 'gh release create $(svu) --generate-notes'
   sig { returns(T.nilable(Hash)) }
   def _tag
-    @_tag ||= GitHub::API.open_rest(GitHub.url_to("repos", user, name, "tags"))[0]
-  rescue GitHub::API::HTTPNotFoundError, Error
-    @_tag = nil
+    @_tag ||= _tags[0]
   end
   
   # which has the latest version from release or tag (if there was a release, but latter was tagged only)
@@ -56,6 +73,11 @@ class Header
   # It's the same as {#name} in {Formula}.
   attr_reader :file
 
+  # Api download URL (for sha256)
+  def api
+    @api ||= _tag.nil? ? _append "tarball", branch : _tags[0]["tarball"]
+  end
+  
   sig { params(file: T.nilable(String)).returns(Header)}
   def initialize(file = nil)
     @file = Pathname.new(file || caller(1).first.split(":")[0])
@@ -174,6 +196,7 @@ class Header
   sig { returns(T::Hash[String, String]) }
   def hash
     {
+      api: api,
       branch: branch,
       cask?: cask?,
       desc: desc,

@@ -2,7 +2,7 @@ cask "bats" do
 
   version "2022.1,221.5080.212"
 
-  url "https://download.jetbrains.com/python/pycharm-professional-#{version.csv.first}#{arch}.dmg"
+  url "https://download.jetbrains.com/python/pycharm-professional-#{version.csv.first}.dmg"
   if Hardware::CPU.intel?
     sha256 "ab5496370a6145073dbd423e47d6112d9c726a4a286d2528e66711f865d92d56"
   else
@@ -24,10 +24,10 @@ cask "bats" do
   end
 
   auto_updates true
-  depends_on pycharm
-  depends_on "docker", quarantine: false
-  depends_on "font-jetbrains-mono-nerd-font", quarantine: false
-  depends_on "iterm2", quarantine: false
+  depends_on cask: "pycharm"
+#   depends_on "docker", quarantine: false
+#   depends_on "font-jetbrains-mono-nerd-font", quarantine: false
+#   depends_on "iterm2", quarantine: false
 
   app "bats.app"
 
