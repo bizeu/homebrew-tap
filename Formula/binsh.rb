@@ -31,7 +31,7 @@ class Binsh < Formula
   depends_on "jq"
   depends_on "pip-completion"
   depends_on "pyenv"
-  depends_on "python@3.10", link: true
+  depends_on "python@3.10"
   depends_on "starship"
   depends_on "vercel-cli"
   depends_on "wget"
