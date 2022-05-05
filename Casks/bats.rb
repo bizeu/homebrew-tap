@@ -25,6 +25,9 @@ cask "Bats" do
 
   auto_updates true
   depends_on pycharm
+  depends_on "docker", quarantine: false
+  depends_on "font-jetbrains-mono-nerd-font", quarantine: false
+  depends_on "iterm2", quarantine: false
 
   app "bats.app"
 

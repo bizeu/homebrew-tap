@@ -5,6 +5,8 @@ FROM homebrew/brew:latest AS brew
 # export DOCKER_BUILDKIT=1 or daemon.json: { "features": { "buildkit": true } }
 # docker build --ssh default=~/.ssh/id_rsa .
 
+USER linuxbrew
+
 RUN apt update -qq
 RUN apt install -y openssh-client git
 

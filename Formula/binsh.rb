@@ -22,21 +22,31 @@ class Binsh < Formula
   depends_on "asciidoctor"
   depends_on "bash"
   depends_on "bash-completion@2"
-  depends_on "bats-core"
+  depends_on "cloudflare-wrangler"
   depends_on "direnv"
   depends_on "gh"
+  depends_on "git"
   depends_on "grc"
-  depends_on "bats-core/bats-core/bats-assert"
-  depends_on "bats-core/bats-core/bats-file"
-  depends_on "bats-core/bats-core/bats-support"
-  
+  depends_on "ipython"
+  depends_on "jq"
+  depends_on "pip-completion"
+  depends_on "pyenv"
+  depends_on "python@3.10", link: true
+  depends_on "starship"
+  depends_on "vercel-cli"
+  depends_on "wget"
+  depends_on "whalebrew"
+  depends_on "dopplerhq/cli/doppler"
+ 
   if OS.mac?
+    depends_on "brew-cask-completion"
     depends_on "coreutils"
     depends_on "git"
+    depends_on "launchctl-completion"
+    depends_on "openssh"
     depends_on "parallel"
   end
 
-  link_overwrite "bin/bats"
   
   def verify_download_integrity(_fn)
     false

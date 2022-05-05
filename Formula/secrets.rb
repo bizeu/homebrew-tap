@@ -5,7 +5,7 @@ require_relative '../cmd/compgen'
 require_relative '../lib/header'
 require_relative 'binsh'
 
-class Bats < Formula
+class Secrets < Formula
   @@header = Header.new(__FILE__)
 
   desc @@header.desc
@@ -16,13 +16,7 @@ class Bats < Formula
   version @@header.version
   head @@header.head, branch: @@header.branch 
 
-  depends_on "bash"
-  depends_on "bash-completion@2"
-  depends_on "bats-core"
-  depends_on "git"
-  depends_on "bats-core/bats-core/bats-assert"
-  depends_on "bats-core/bats-core/bats-file"
-  depends_on "bats-core/bats-core/bats-support"
+  ohai Binsh.header.full_name
   
   if OS.mac?
     depends_on "parallel"
