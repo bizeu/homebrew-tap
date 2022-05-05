@@ -69,7 +69,7 @@ class Header
   # Is cask?
   sig { returns(T::Boolean) }
   def cask?
-    @cask? ||= file.to_s.include?("/Casks/")
+    @cask ||= file.to_s.include? "/Casks/"
   end
 
   sig { returns(String) }
@@ -87,7 +87,7 @@ class Header
   # Is formula?
   sig { returns(T::Boolean) }
   def formula?
-    @formula? ||= file.to_s.include?("/Formula/")
+    @formula ||= file.to_s.include? "/Formula/"
   end
   
   # The fully-qualified name of the {Formula}.
