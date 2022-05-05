@@ -56,7 +56,7 @@ class Header
   # It's the same as {#name} in {Formula}.
   attr_reader :file
 
-  sig { params(file: T.nilable(String)).returns(Header) }
+  sig { params(file: T.nilable(String)).returns(Header)}
   def initialize(file = nil)
     @file = Pathname.new(file || caller(1).first.split(":")[0])
   end
@@ -64,6 +64,12 @@ class Header
   sig { returns(String) }
   def branch
     @branch ||= _repo["default_branch"]
+  end
+  
+  # Is cask?
+  sig { returns(T::Boolean) }
+  def cask?
+    @cask? ||= file.to_s.include?("/Casks/")
   end
 
   sig { returns(String) }
@@ -76,6 +82,12 @@ class Header
     resource.url(url) 
     resource.downloader.shutup!
     download = resource.fetch(verify_download_integrity: false)    
+  end
+  
+  # Is formula?
+  sig { returns(T::Boolean) }
+  def formula?
+    @formula? ||= file.to_s.include?("/Formula/")
   end
   
   # The fully-qualified name of the {Formula}.
@@ -163,8 +175,10 @@ class Header
   def hash
     {
       branch: branch,
+      cask?: cask?,
       desc: desc,
       file: file.to_s,
+      formula?: formula?,
       full_name: full_name,
       head: head,
       head_only?: head_only?,

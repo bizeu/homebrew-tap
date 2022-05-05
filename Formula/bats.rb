@@ -24,14 +24,13 @@ class Bats < Formula
   depends_on "bats-core/bats-core/bats-file"
   depends_on "bats-core/bats-core/bats-support"
   ohai Binsh.header.full_name
-#   depends_on Binsh.header.full_name
   
   if OS.mac?
     depends_on "parallel"
   end
 
   link_overwrite "bin/bats"
-  
+
   def verify_download_integrity(_fn)
     false
   end
@@ -44,17 +43,9 @@ class Bats < Formula
   
   def post_install
     ohai "Postinstalling #{Formatter.identifier(full_name)} #{version}"
-    begin
-      compgen
-    rescue
-      nil
-    end
     
-    begin
-      autoremove
-    rescue
-      nil
-    end
+    Homebrew::compgen
+    ohai "Postinstalled: #{Formatter.success("compgen")}"
   end
   
   test do

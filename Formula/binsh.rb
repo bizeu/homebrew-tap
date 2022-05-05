@@ -25,15 +25,14 @@ class Binsh < Formula
   depends_on "bats-core"
   depends_on "direnv"
   depends_on "gh"
-  depends_on "git"
   depends_on "grc"
-  depends_on "pycharm"
   depends_on "bats-core/bats-core/bats-assert"
   depends_on "bats-core/bats-core/bats-file"
   depends_on "bats-core/bats-core/bats-support"
   
   if OS.mac?
     depends_on "coreutils"
+    depends_on "git"
     depends_on "parallel"
   end
 
