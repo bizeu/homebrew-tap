@@ -43,8 +43,8 @@ class Binsh < Formula
   end
   
   def install
+    bash_completion.install Dir["etc/bash_completion.d/*"]
     bin.install Dir["bin/*"]
-    etc.install Dir["etc/*"]
     share.install Dir["share/*"]
   end
   
@@ -54,26 +54,20 @@ class Binsh < Formula
     Homebrew::compgen
     ohai "Postinstalled: #{Formatter.success("compgen")}"
 
-    unless dest.symlink?
-      dest = Pathname(etc/"profile.d/grc.sh")
-      ohai dest.make_relative_symlink(etc/"grc.sh")
-      ohai "Postinstalled: #{Formatter.success("grc")}"
-    end
-    
-    begin
-      Homebrew::grc
-    rescue
-      nil
-    end
+    dest = Pathname(etc/"profile.d/grc.sh")
+    ohai dest.make_relative_symlink(etc/"grc.sh") unless dest.symlink?
+    ohai "Postinstalled: #{Formatter.success("grc")}"
   end
   
+  if File.binread("#{Formula["grc"].pkgshare}/conf.dockerps").include? "on_blue"    
+    def caveats
+      <<~EOS
+        run `brew grc` to path grc
+      EOS
+    end
+  end
+    
   test do
-    begin
-      Utils::Inreplace.inreplace("#{Formula["grc"].pkgshare}/conf.dockerps", "on_blue", "blue", false)
-    rescue
-      nil
-    end  
-    system "true"
-#     system "#{HOMEBREW_PREFIX}/bin/#{name}", "--help"
+    system "#{HOMEBREW_PREFIX}/bin/#{name}", "--help"
   end
 end
