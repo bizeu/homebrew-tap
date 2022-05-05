@@ -10,8 +10,8 @@ module Homebrew
 
   module_function
 
-  COMPLETIONS_BASH = (Completions::COMPLETIONS_DIR/"bash/brew").freeze
-  COMPLETIONS_ZSH = (Completions::COMPLETIONS_DIR/"zsh/_brew").freeze
+  COMPLETIONS_BASH ||= (Completions::COMPLETIONS_DIR/"bash/brew").freeze
+  COMPLETIONS_ZSH ||= (Completions::COMPLETIONS_DIR/"zsh/_brew").freeze
   
   sig { returns(CLI::Parser) }
 
@@ -27,12 +27,12 @@ module Homebrew
   end
 
   def compgen
-    Completions.link! unless Completions.link_completions?
+    Homebrew::Completions.link! unless Homebrew::Completions.link_completions?
     Commands.rebuild_commands_completion_list
     commands = Commands.commands(external: true, aliases: true).sort
     for i in [COMPLETIONS_BASH, COMPLETIONS_ZSH]
       begin
-        ohai((i).atomic_write Completions.generate_bash_completion_file(commands))
+        (i).atomic_write Homebrew::Completions.generate_bash_completion_file(commands)
       rescue
         nil
       end

@@ -6,15 +6,15 @@ require_relative '../lib/header'
 require_relative 'binsh'
 
 class Bats < Formula
-  header = Header.new()
+  @@header = Header.new(__FILE__)
 
-  desc header.desc
-  homepage header.homepage
-  url header.url
-  sha256 header.sha256
-  license header.license
-  version header.version
-  head header.head, branch: header.branch 
+  desc @@header.desc
+  homepage @@header.homepage
+  url @@header.url
+  sha256 @@header.sha256
+  license @@header.license
+  version @@header.version
+  head @@header.head, branch: @@header.branch 
 
   depends_on "bash"
   depends_on "bash-completion@2"
@@ -23,7 +23,7 @@ class Bats < Formula
   depends_on "bats-core/bats-core/bats-assert"
   depends_on "bats-core/bats-core/bats-file"
   depends_on "bats-core/bats-core/bats-support"
-  ohai Binsh.h
+  ohai Binsh.header.full_name
 #   depends_on Binsh.header.full_name
   
   if OS.mac?

@@ -1,20 +1,23 @@
 # typed: false
 # frozen_string_literal: true
 
+require 'utils/formatter'
+require 'utils/inreplace'
+require "utils/string_inreplace_extension"
 require_relative '../cmd/compgen'
+require_relative '../cmd/grc'
 require_relative '../lib/header'
 
 class Binsh < Formula
-  @@h = Header.new()
-  header = Header.new()
-
-  desc header.desc
-  homepage header.homepage
-  url header.url
-  sha256 header.sha256
-  license header.license
-  version header.version
-  head header.head, branch: header.branch 
+  @@header = Header.new(__FILE__)
+  
+  desc @@header.desc
+  homepage @@header.homepage
+  url @@header.url
+  sha256 @@header.sha256
+  license @@header.license
+  version @@header.version
+  head @@header.head, branch: @@header.branch 
 
   depends_on "asciidoctor"
   depends_on "bash"
@@ -40,7 +43,6 @@ class Binsh < Formula
   end
   
   def install
-    bash_completion.install Dir["etc/bash_completion.d/*"]
     bin.install Dir["bin/*"]
     etc.install Dir["etc/*"]
     share.install Dir["share/*"]
@@ -48,24 +50,30 @@ class Binsh < Formula
   
   def post_install
     ohai "Postinstalling #{Formatter.identifier(full_name)} #{version}"
-    begin
-      compgen
-    rescue
-      nil
+    
+    Homebrew::compgen
+    ohai "Postinstalled: #{Formatter.success("compgen")}"
+
+    unless dest.symlink?
+      dest = Pathname(etc/"profile.d/grc.sh")
+      ohai dest.make_relative_symlink(etc/"grc.sh")
+      ohai "Postinstalled: #{Formatter.success("grc")}"
     end
     
     begin
-      autoremove
+      Homebrew::grc
     rescue
       nil
     end
-    grc = Formula["grc"]
-    grc.keg.make_relative_symlink(etc/"grc.sh", etc/"profile.d/grc.sh")
-    ohai "hola"
-    inreplace "#{grc.pkgshare}/conf.dockerps" "on_blue", "blue"
   end
   
   test do
-    system "#{HOMEBREW_PREFIX}/bin/#{name}", "--help"
+    begin
+      Utils::Inreplace.inreplace("#{Formula["grc"].pkgshare}/conf.dockerps", "on_blue", "blue", false)
+    rescue
+      nil
+    end  
+    system "true"
+#     system "#{HOMEBREW_PREFIX}/bin/#{name}", "--help"
   end
 end
