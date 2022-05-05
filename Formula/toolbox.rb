@@ -27,7 +27,6 @@ class Binsh < Formula
   depends_on "gh"
   depends_on "git"
   depends_on "grc"
-  depends_on "pycharm"
   depends_on "bats-core/bats-core/bats-assert"
   depends_on "bats-core/bats-core/bats-file"
   depends_on "bats-core/bats-core/bats-support"
