@@ -1,4 +1,4 @@
-cask "Bats" do
+cask "bats" do
 
   version "2022.1,221.5080.212"
 
