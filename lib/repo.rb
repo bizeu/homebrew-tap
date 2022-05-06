@@ -217,7 +217,10 @@ class Repo
   sig { returns(String) }
   def url
     return @url unless @url.nil?
+    
     # TODO: aqui lo dejo, comprobar de nuevo las url con el cambio de symbol y ver por que vacía el downloader
+    # TODO: mirar la captura
+    
     if strategy == :homebrew_curl
       @url = main? ? api_repos_url("tarball", branch).to_s : release["tarball_url"] || latest["tarball_url"]
     else
