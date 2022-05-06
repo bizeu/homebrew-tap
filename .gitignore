@@ -119,8 +119,8 @@ ENV/
 htmlcov/
 instance/
 ipython_config.py
-lib/
 lib64/
+!lib/
 local_settings.py
 MANIFEST
 nosetests.xml

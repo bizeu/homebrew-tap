@@ -1,4 +1,4 @@
-# typed: false
+# typed: ignore
 # frozen_string_literal: true
 
 require 'utils/formatter'
@@ -23,6 +23,7 @@ class Binsh < Formula
   depends_on "bash"
   depends_on "bash-completion@2"
   depends_on "cloudflare-wrangler"
+  depends_on "curl" # for :homebrew_curl
   depends_on "direnv"
   depends_on "gh"
   depends_on "git"

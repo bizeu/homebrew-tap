@@ -14,7 +14,6 @@ module Homebrew
   module_function
 
   sig { returns(CLI::Parser) }
-
   def all_args
     Homebrew::CLI::Parser.new do
       description <<~ALL_DESC

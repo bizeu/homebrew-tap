@@ -12,6 +12,40 @@ Homebrew tap for development.
 | [release](https://github.com/bizeu/release)     | Release Action | `brew install release`   |
 <!-- project_table_end -->
 
+## Console
+### irb
+```shell
+PATH="$(brew --prefix ruby)/bin:${PATH}"; export PATH
+RUBYLIB="$(brew taps --path)" irb
+```
+
+```ruby
+$LOAD_PATH
+$:
+```
+
+### brew irb
+`brew irb` unsets `$RUBYLIB`, therefore "." must be added to the `$LOAD_PATH` after irb is started.
+```shell
+PATH="$(brew --prefix ruby)/bin:${PATH}"; export PATH
+RUBYLIB="$(brew taps --path)" irb --pry
+```
+
+```ruby
+$:.unshift(".")
+require "lib/repo"
+r = Repo.new("j5pu", "bats")  # main
+r = Repo.new("j5pu", "secrets")  # tag (private)
+r = Repo.new("bizeu", "release")  # main (private)
+r = Repo.new("j5pu", "bindev")  # tag
+r = Repo.new("bizeu", "shts")  # release and tag (private)
+require "lib/functions"
+Functions::github_token
+```
+
+`$LOAD_PATH.unshift(".")` can also be used
+
+
 ## Commands
 ```shell
 brew --env

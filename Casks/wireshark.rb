@@ -1,3 +1,4 @@
+# typed: false
 cask "wireshark" do
   url_arch, livecheck_arch = Hardware::CPU.intel? ? ["Intel", "x86-"] : ["Arm", "arm"]
 

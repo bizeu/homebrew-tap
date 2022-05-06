@@ -10,6 +10,11 @@ audit:
 brew audit --new --git --formula Formula/$${formula}.rb || true; \
 done
 
+gem-build:
+	@gem build homebrew_tap.gemspec
+gem-install:
+	@gem install homebrew_tap-*.gem
+
 brew:
 	@! brew list bats 2>/dev/null || brew uninstall bats
 	@brew bundle --file Brewfile --quiet --no-lock | grep -v "^Using"

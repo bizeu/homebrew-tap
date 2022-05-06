@@ -1,3 +1,4 @@
+# typed: ignore
 require "os/linux/glibc"
 
 class BrewedGlibcNotOlderRequirement < Requirement

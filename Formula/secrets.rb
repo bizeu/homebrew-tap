@@ -1,4 +1,4 @@
-# typed: false
+# typed: ignore
 # frozen_string_literal: true
 
 require_relative '../cmd/compgen'
@@ -17,6 +17,7 @@ class Secrets < Formula
   head @@header.head, branch: @@header.branch 
 
   ohai Binsh.header.full_name
+  depends_on "curl" # for :homebrew_curl
   
   if OS.mac?
     depends_on "parallel"
