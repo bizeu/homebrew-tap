@@ -1,9 +1,9 @@
 # typed: ignore
 # frozen_string_literal: true
 
-
 =begin
 $ brew pry
+
 h = Header.new("Casks/bats.rb"); h.hash        # main
 h = Header.new("Formula/bats.rb"); h.hash      # main
 h = Header.new("Formula/binsh.rb"); h.hash     # main
@@ -15,6 +15,7 @@ require "tap"
 require "uri"
 require 'utils/github'
 require 'utils/github/api'
+
 require_relative "repo"
 
 class Header

@@ -1,12 +1,12 @@
 # typed: ignore
 # frozen_string_literal: true
 
-require 'utils/formatter'
-require 'utils/inreplace'
-require "utils/string_inreplace_extension"
-require_relative '../cmd/compgen'
-require_relative '../cmd/grc'
-require_relative '../lib/header'
+require "utils/formatter"
+
+require_relative "../cmd/compgen"
+require_relative "../cmd/grc"
+require_relative "../lib/functions"
+require_relative "../lib/header"
 
 class Binsh < Formula
   @@header = Header.new(__FILE__)
@@ -19,14 +19,12 @@ class Binsh < Formula
   version @@header.version
   head @@header.head, branch: @@header.branch 
 
-  depends_on "asciidoctor"
-  depends_on "bash"
-  depends_on "bash-completion@2"
-  depends_on "cloudflare-wrangler"
+  depends_on "asciidoctor" => :recommended
+  depends_on "most" => :recommended
+  depends_on "cloudflare-wrangler" => :recommended
   depends_on "curl" # for :homebrew_curl
   depends_on "direnv"
   depends_on "gh"
-  depends_on "git"
   depends_on "grc"
   depends_on "ipython"
   depends_on "jq"
@@ -34,21 +32,21 @@ class Binsh < Formula
   depends_on "pyenv"
   depends_on "python@3.10"
   depends_on "starship"
-  depends_on "vercel-cli"
+  depends_on "vercel-cli" => :recommended
   depends_on "wget"
-  depends_on "whalebrew"
-  depends_on "dopplerhq/cli/doppler"
- 
+  depends_on "whalebrew"  # whalebrew completion bash
+  depends_on "dopplerhq/cli/doppler" => :recommended
+  depends_on "j5pu/tap/bats"
+  
   if OS.mac?
-    depends_on "brew-cask-completion"
+    depends_on "brew-cask-completion" => :recommended
     depends_on "coreutils"
-    depends_on "git"
-    depends_on "launchctl-completion"
+    depends_on "launchctl-completion" => :recommended
     depends_on "openssh"
-    depends_on "parallel"
+  else
+    depends_on "man-db" => :recommended
   end
 
-  
   def verify_download_integrity(_fn)
     false
   end
@@ -60,20 +58,30 @@ class Binsh < Formula
   end
   
   def post_install
-    ohai "Postinstalling #{Formatter.identifier(full_name)} #{version}"
-    
-    Homebrew::compgen
-    ohai "Postinstalled: #{Formatter.success("compgen")}"
+    Functions::post_install(full_name, version)
 
-    dest = Pathname(etc/"profile.d/grc.sh")
-    ohai dest.make_relative_symlink(etc/"grc.sh") unless dest.symlink?
-    ohai "Postinstalled: #{Formatter.success("grc")}"
+    tool = "grc"
+    if Functions::exists?(tool)
+      dest = Pathname(etc/"profile.d/#{tool}.sh")
+      ohai dest.make_relative_symlink(etc/"#{tool}.sh") unless dest.symlink?
+      ohai "Postinstalled: #{Formatter.success(tool)}"
+    end 
+    
+    tool = "whalebrew"
+    if Functions::exists?(tool)
+      system `#{tool} completion bash > #{etc}/bash_completion.d/#{tool}.bash`
+      ohai "Postinstalled: #{Formatter.success(tool)}"
+    end
   end
   
-  if File.binread("#{Formula["grc"].pkgshare}/conf.dockerps").include? "on_blue"    
+  def grc
+    Functions::exists?(__method__.to_s) && File.binread("#{Formula["grc"].pkgshare}/conf.dockerps").include? "on_blue"  
+  end
+  
+  if grc    
     def caveats
       <<~EOS
-        run `brew grc` to path grc
+        "run `brew grc` to patch grc"
       EOS
     end
   end

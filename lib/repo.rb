@@ -3,6 +3,7 @@
 
 =begin
 $ brew pry
+
 r = Repo.new("j5pu", "bats"); r.hash      # main
 r = Repo.new("j5pu", "secrets"); r.hash   # tag (private) => url: api
 r = Repo.new("bizeu", "release"); r.hash  # main (private) => url: api
@@ -14,6 +15,7 @@ require "download_strategy"
 require "extend/pathname"
 require "uri"
 require "utils/github"
+
 require_relative "functions"
 
 class Repo

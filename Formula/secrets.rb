@@ -1,9 +1,7 @@
 # typed: ignore
 # frozen_string_literal: true
 
-require_relative '../cmd/compgen'
-require_relative '../lib/header'
-require_relative 'binsh'
+require_relative "../lib/header"
 
 class Secrets < Formula
   @@header = Header.new(__FILE__)
@@ -27,14 +25,7 @@ class Secrets < Formula
     bin.install Dir["bin/*"]
   end
   
-  def post_install
-    ohai "Postinstalling #{Formatter.identifier(full_name)} #{version}"
-    
-    Homebrew::compgen
-    ohai "Postinstalled: #{Formatter.success("compgen")}"
-  end
-  
   test do
-    system '. #{HOMEBREW_PREFIX}/etc/profile.d/#{name}.sh && [ "${GH_TOKEN-}" ]'
+    system ". #{etc}/profile.d/#{name}.sh && [ "${GH_TOKEN-}" ]"
   end
 end

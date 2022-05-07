@@ -1,12 +1,30 @@
 # typed: ignore
 # frozen_string_literal: true
 
+require "requirement"
+
 require_relative "../lib/functions"
-require_relative "../lib/header"
+require_relative '../lib/header'
 
-class Bats < Formula
+
+class Idea < Requirement
+  fatal true
+  satisfy(build_env: false) { Functions::satisfy("intellij-#{name}", false) }
+end
+
+class PyCharm < Requirement
+  fatal true
+  satisfy(build_env: false) { Functions::satisfy(name, false) }
+end
+
+class RubyMine < Requirement
+  fatal true
+  satisfy(build_env: false) { Functions::satisfy(name, false) }
+end
+
+class Ide < Formula
   @@header = Header.new(__FILE__)
-
+  
   desc @@header.desc
   homepage @@header.homepage
   url @@header.url, **@@header.using
@@ -15,19 +33,16 @@ class Bats < Formula
   version @@header.version
   head @@header.head, branch: @@header.branch 
 
-  depends_on "bash"
-  depends_on "bash-completion@2"
-  depends_on "bats-core"
-  depends_on "git"
-  depends_on "bats-core/bats-core/bats-assert"
-  depends_on "bats-core/bats-core/bats-file"
-  depends_on "bats-core/bats-core/bats-support"
+  depends_on "gh"
+  depends_on "grc"
+  depends_on "j5pu/tap/bats"
+  depends_on "j5pu/tap/binsh"
   
   if OS.mac?
-    depends_on "parallel"
+    depends_on Idea
+    depends_on PyCharm
+    depends_on RubyMine
   end
-
-  link_overwrite "bin/bats"
 
   def verify_download_integrity(_fn)
     false
@@ -42,7 +57,7 @@ class Bats < Formula
   def post_install
     Functions::post_install(full_name, version)
   end
-  
+
   test do
     system "#{HOMEBREW_PREFIX}/bin/#{name}", "--help"
   end
