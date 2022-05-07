@@ -10,29 +10,21 @@ class Secrets < Formula
 
   desc @@header.desc
   homepage @@header.homepage
-  url @@header.url, @@header.strategy
+  url @@header.url, **@@header.using
   sha256 @@header.sha256
   license @@header.license
   version @@header.version
   head @@header.head, branch: @@header.branch 
 
-  ohai Binsh.header.full_name
   depends_on "curl" # for :homebrew_curl
   
-  if OS.mac?
-    depends_on "parallel"
-  end
-
-  link_overwrite "bin/bats"
-
   def verify_download_integrity(_fn)
     false
   end
   
   def install
-    bash_completion.install Dir["etc/bash_completion.d/*"]
+    etc.install Dir["etc/*"]
     bin.install Dir["bin/*"]
-    share.install Dir["share/*"]
   end
   
   def post_install
@@ -43,6 +35,6 @@ class Secrets < Formula
   end
   
   test do
-    system "#{HOMEBREW_PREFIX}/bin/#{name}", "--help"
+    system '. #{HOMEBREW_PREFIX}/etc/profile.d/#{name}.sh && [ "${GH_TOKEN-}" ]'
   end
 end

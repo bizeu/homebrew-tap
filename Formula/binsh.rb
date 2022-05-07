@@ -13,7 +13,7 @@ class Binsh < Formula
   
   desc @@header.desc
   homepage @@header.homepage
-  url @@header.url, @@header.strategy
+  url @@header.url, **@@header.using
   sha256 @@header.sha256
   license @@header.license
   version @@header.version

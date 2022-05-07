@@ -1,16 +1,36 @@
 # typed: ignore
 # frozen_string_literal: true
 
-require_relative '../cmd/compgen'
-require_relative '../lib/header'
-require_relative 'binsh'
+require "cask/cask_loader"
+require "cask/installer"
+require "requirement"
+
+require_relative "../cmd/compgen"
+require_relative "../lib/functions"
+require_relative "../lib/header"
+
+
+class Idea < Requirement
+  fatal true
+  satisfy(build_env: false) { Functions::satisfy("intellij-#{name}", false) }
+end
+
+class PyCharm < Requirement
+  fatal true
+  satisfy(build_env: false) { Functions::satisfy(name, false) }
+end
+
+class RubyMine < Requirement
+  fatal true
+  satisfy(build_env: false) { Functions::satisfy(name, false) }
+end
 
 class Bats < Formula
   @@header = Header.new(__FILE__)
 
   desc @@header.desc
   homepage @@header.homepage
-  url @@header.url, @@header.strategy
+  url @@header.url, **@@header.using
   sha256 @@header.sha256
   license @@header.license
   version @@header.version
@@ -26,7 +46,9 @@ class Bats < Formula
   
   if OS.mac?
     depends_on "parallel"
-    depends_on cask: "pycharm", quarantine: false
+    depends_on Idea
+    depends_on PyCharm
+    depends_on RubyMine
   end
 
   link_overwrite "bin/bats"

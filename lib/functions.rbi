@@ -5,6 +5,8 @@ module Functions
   extend T::Sig
 
   module_function
-#   sig {params(path: String).returns(String) }
+
+  def satisfy: (ref: String | Pathname, cask: bool = true) -> bool
+
   def sha256: (path: String) -> String
 end

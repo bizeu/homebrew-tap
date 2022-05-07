@@ -123,6 +123,14 @@ class Header
     @url ||= repo.url
   end
 
+
+  # Strategy Specification for URL Download in Formula.
+  #
+  # @return [Hash[Symbol, :curl | :homebrew_curl]] :homebrew_curl if private?, :curl otherwise
+  def using
+    @using ||= { using: repo.strategy }
+  end
+
   # Version.
   #
   # @return [String] version
