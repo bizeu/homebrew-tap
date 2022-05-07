@@ -1,10 +1,20 @@
-# typed: ignore
+# typed: true
 # frozen_string_literal: true
+
+=begin
+$ brew pry
+r = Repo.new("j5pu", "bats"); r.hash      # main
+r = Repo.new("j5pu", "secrets"); r.hash   # tag (private) => url: api
+r = Repo.new("bizeu", "release"); r.hash  # main (private) => url: api
+r = Repo.new("j5pu", "bindev"); r.hash    # tag
+r = Repo.new("bizeu", "shts"); r.hash     # release and tag (private) => url: api
+=end
 
 require "download_strategy"
 require "extend/pathname"
 require "uri"
 require "utils/github"
+require_relative "functions"
 
 class Repo
   extend T::Sig
@@ -13,50 +23,41 @@ class Repo
   # Repository Name
   attr_reader :name
 
-  # @param [String] owner
+  # @param [String] user
   # Repo Owner
-  attr_reader :owner
+  attr_reader :user
 
-  # @param [String] url
-  # Download URL
-  attr_reader :owner
-
-  sig { params(owner: String, name: String).returns(Repo) }
-  def initialize(owner, name)
-    @owner = owner
+  def initialize(user, name)
+    @user = user
     @name = name
     @url = nil
   end
   
   # GitHub API Repos Repository URL.
   #
-  # @return [URI] repos:owner/:name url 
-  sig { returns(URI) }
+  # @return [URI] repos:user/:name url 
   def api
     @api ||= api_repos_url
   end
   
   # Adds Subroutes to GitHub API Repos Repository URL.
   #
-  # @subroutes [String] subroutes to add to repos/:owner/:repo/:subroutes
+  # @subroutes [String] subroutes to add to repos/:user/:repo/:subroutes
   # @return [URI] url
-  sig { params(subroutes: String).returns(URI) }
   def api_repos_url(*subroutes)
-     GitHub.url_to("repos", owner, name, *subroutes)
+     GitHub.url_to("repos", user, name, *subroutes)
   end
 
   # Remote Default Branch.
   #
   # @return [String] branch name
-  sig { returns(String) }
   def branch
     @branch ||= repo["default_branch"]
   end
 
   # Download Cache Directory.
   #
-  # @return [String] branch name
-  sig { returns(Pathname) }
+  # @return [:curl | :homebrew_curl] branch name
   def cache
     unless downloader.cached_location.exist?
       downloader.shutup!
@@ -67,52 +68,55 @@ class Repo
 
   # GitHub Token.
   #
-  # @return [T.nilable(String)] token
-  sig { returns(T.nilable(String)) }
+  # @return [String | nil] token
   def credentials
     @credentials ||= GitHub::API.credentials
   end
   
-  sig { returns(String) }
+  # Repository Description.
+  #
+  # @return [String] token
   def desc
     @desc ||= repo["description"]
   end
 
   # Downloaded Instance for URL.
   #
-  # @return [T.any(:curl, :homebrew_curl)] url downloader instance
-  sig { returns(T.any(:curl, :homebrew_curl)) }
+  # @return [CurlDownloadStrategy | HomebrewCurlDownloadStrategy] url downloader instance
   def downloader
     @downloader ||= DownloadStrategyDetector.detect_from_symbol(strategy).new(
-      url=url, 
-      name=name, 
-      version=version, 
-      meta={headers: ["Accept: application/vnd.github.v3+json", "Authorization: token #{credentials}"], 
-      location: true, 
-      silent: true}
+      url, 
+      name, 
+      version, 
+      **headers, location: true, silent: true,
     )
   end
 
+  def headers
+    if strategy == :homebrew_curl
+      @headers ||= { headers: ["Accept: application/vnd.github.v3+json", "Authorization: token #{credentials}"]}
+    else 
+      @headers ||= {}
+    end
+  end
+  
   # Remote URL from {#github} adding ".git".
   #
   # @return [String] git repository url 
-  sig { returns(String) }
   def head
     @head ||= repo["clone_url"]
   end
-
+  
   # GitHub Repository URL.
   #
   # @return [URI] repository url 
-  sig { returns(URI) }
   def homepage
-    @homepage ||= URI.parse(["https://github.com", owner, name].join("/"))
+    @homepage ||= URI.parse(["https://github.com", user, name].join("/"))
   end
     
   # API Repository Latest Tag Hash
   #
   # @return [T::Hash] latest tag hash
-  sig { returns(T::Hash) }
   def latest
     @latest ||= GitHub::API.open_rest(api_repos_url "tags").fetch(0, {})
   end
@@ -120,7 +124,6 @@ class Repo
   # License SPDX ID.
   #
   # @return [String] license ID
-  sig { returns(String) }
   def license
     @license ||= repo["license"].nil? ? "MIT" : repo["license"]["spdx_id"]
   end
@@ -128,7 +131,6 @@ class Repo
   # No Tags in Repository Use Main or --HEAD.
   #
   # @return [T::Boolean] true if no tags
-  sig { returns(T::Boolean) }
   def main?
     @head_only ||= tag == "v0.0.0"
   end
@@ -136,7 +138,6 @@ class Repo
   # Is Private Repo?.
   #
   # @return [T::Boolean] repos hash
-  sig { returns(T::Boolean) }
   def private?
     @private ||= repo["private"]
   end
@@ -144,9 +145,8 @@ class Repo
   # Latest Release Hash.
   #
   # @return [T::Hash] release hash
-  sig { returns(T::Hash) }
   def release 
-    @release ||= GitHub.get_latest_release(owner, name)
+    @release ||= GitHub.get_latest_release(user, name)
   rescue GitHub::API::HTTPNotFoundError
     @release = {}
   end
@@ -154,45 +154,40 @@ class Repo
   # Api Repos Response for Repository Name.
   #
   # @return [T.nilable(T::Hash)] repos hash
-  sig { returns(T.nilable(T::Hash)) }
   def repo 
-    @repo ||= GitHub.repository(owner, name)
+    @repo ||= GitHub.repository(user, name)
   rescue GitHub::API::HTTPNotFoundError
-    odie "Repository #{owner}/#{name} not found#{", or no credentials" if credentials.nil?}"
+    odie "Repository #{user}/#{name} not found#{", or no credentials" if credentials.nil?}"
   end
   
   # Commit SHA.
   #
   # @return [String] commit sha
-  sig { returns(String) }
   def sha 
     @sha ||= GitHub::API.open_rest(api_repos_url("commits", branch))["sha"]
   rescue GitHub::API::HTTPNotFoundError
-    odie "Repository #{owner}/#{name} no commits"
+    odie "Repository #{user}/#{name} no commits"
   end 
 
   # SHA256.
   #
   # @return [String] commit sha
-  sig { returns(String) }
   def sha256
-    Digest::SHA256.hexdigest(cache.to_s)
+    Functions::sha256(cache.to_s)
   end
 
   # Short Commit SHA.
   #
   # @return [String] short sha
-  sig { returns(String) }
   def sort 
     @sort ||= sha[0..6]
   end 
 
   # Download Strategy Symbol if Private or Public.
   #
-  # @return [T.any(:curl, :homebrew_curl)] :homebrew_curl if private?, :curl otherwise
-  sig { returns(T.any(:curl, :homebrew_curl)) }
+  # @return [:curl | :homebrew_curl] :homebrew_curl if private?, :curl otherwise
   def strategy 
-    @strategy ||= private? ? :curl : :homebrew_curl
+    @strategy ||= private? ? :homebrew_curl : :curl 
   end 
 
   # Latest Repository Tag Hash from API
@@ -200,7 +195,6 @@ class Repo
   # When a release is created: 'gh release create $(svu) --generate-notes'
   #
   # @return [T.nilable(String)] latest tag
-  sig { returns(T.nilable(String)) }
   def tag
     @tag ||= release.fetch("tag_name", latest.fetch("name", "v0.0.0"))
   end
@@ -214,13 +208,7 @@ class Repo
   #          name="secrets", version="v0.0.0", meta={headers: [...], location: true, silent: true})
   #
   # @return [String] download url
-  sig { returns(String) }
   def url
-    return @url unless @url.nil?
-    
-    # TODO: aqui lo dejo, comprobar de nuevo las url con el cambio de symbol y ver por que vacía el downloader
-    # TODO: mirar la captura
-    
     if strategy == :homebrew_curl
       @url = main? ? api_repos_url("tarball", branch).to_s : release["tarball_url"] || latest["tarball_url"]
     else
@@ -228,25 +216,23 @@ class Repo
     end
   end
   
-  # Short Commit SHA.
+  # Version.
   #
-  # @return [String] short sha
-  sig { returns(String) }
+  # @return [String] version
   def version 
     @version ||= "#{tag}#{"-alpha+#{sha}" if main?}"
   end 
 
-  sig { returns(T::Hash[String, String]) }
   def debug
     {
       repo: repo,
       release: release,
       latest: latest,
+      downloader: downloader,
       **hash,
     }
   end
   
-  sig { returns(T::Hash[String, String]) }
   def hash
     {
       api: api,
@@ -254,13 +240,11 @@ class Repo
       cache: cache,
       credentials: credentials,
       desc: desc,
-      downloader: downloader,
       head: head,
       homepage: homepage,
       license: license,
       main?: main?,
       name: name,
-      owner: owner,
       private?: private?,
       repository: to_s,
       sha: sha,
@@ -269,11 +253,12 @@ class Repo
       strategy: strategy,
       tag: tag,
       url: url,
+      user: user,
       version: version,
     }
   end
   
   def to_s
-    [owner, name].join("/")
+    [user, name].join("/")
   end
 end
