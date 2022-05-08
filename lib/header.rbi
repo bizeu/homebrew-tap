@@ -18,6 +18,8 @@ class Header
   #sig { params(file: T.nilable(String)).returns(void) }
   def initialize: (file: T.nilable(String) = ...) -> void
 
+  def run: (file: T.nilable(String) = ...) -> void
+
   def branch: () -> String
   def cask?: () -> bool
   def desc: () -> String

@@ -198,7 +198,7 @@ class Repo
   #
   # @return [T.nilable(String)] latest tag
   def tag
-    @tag ||= release.fetch("tag_name", latest.fetch("name", "v0.0.0"))
+    @tag ||= latest.fetch("name", "v0.0.0")
   end
 
   # Download url
@@ -212,7 +212,7 @@ class Repo
   # @return [String] download url
   def url
     if strategy == :homebrew_curl
-      @url = main? ? api_repos_url("tarball", branch).to_s : release["tarball_url"] || latest["tarball_url"]
+      @url = main? ? api_repos_url("tarball", branch).to_s : latest["tarball_url"]
     else
       @url = "#{homepage.to_s}/archive/#{main? ? sha : version}.tar.gz"
     end

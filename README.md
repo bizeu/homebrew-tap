@@ -12,6 +12,44 @@ Homebrew tap for development.
 | [release](https://github.com/bizeu/release)     | Release Action | `brew install release`   |
 <!-- project_table_end -->
 
+## [Header](lib/header.rb)
+### Alt 1
+```ruby
+require_relative "../lib/header"
+
+class Bats < Formula
+  Header.run(__FILE__, self)
+
+  depends_on "bash"
+
+  def install
+    bin.install Dir["bin/*"]
+  end
+```
+
+### Alt 2
+```ruby
+require_relative "../lib/header"
+
+class Bats < Formula
+  @@header = Header.new(__FILE__)
+
+  desc @@header.desc
+  homepage @@header.homepage
+  url @@header.url, **@@header.using
+  sha256 @@header.sha256
+  license @@header.license
+  version @@header.version
+  head @@header.head, branch: @@header.branch
+
+
+  depends_on "bash"
+
+  def install
+    bin.install Dir["bin/*"]
+  end
+```
+
 ## Console
 ### irb
 ```shell

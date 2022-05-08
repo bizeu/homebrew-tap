@@ -31,8 +31,12 @@ module Functions
 
   # Generate completions file (bash, zsh), updates cached brew subcommands and link taps completions.
   #
+  # @param [String] full_name formula full name to add with post install message
+  # @param [version] version formula version to add with post install message
   # @return [void]
-  def compgen
+  def compgen(full_name = nil, version = nil)
+    post_format(full_name, version)
+
     Homebrew::Completions.link! unless Homebrew::Completions.link_completions?
     Commands.rebuild_commands_completion_list
     commands = Commands.commands(external: true, aliases: true).sort
@@ -45,6 +49,8 @@ module Functions
     end
     line = "    #{__method__.to_s}) _brew_#{__method__.to_s} ;;"
     odie "#{COMPLETIONS_BASH}:#{line}" unless COMPLETIONS_BASH.binread.include? line
+    
+    ohai "Postinstalled: #{Formatter.success(__method__.to_s)}" unless full_name.nil?
   end
 
   # Checks if any version of formula is installed.
@@ -61,14 +67,13 @@ module Functions
     Formulary.factory(name).any_version_installed?
   end
   
-  # Common Post Install for Formulas with Header and Compgen.
+  # Common Post Install Start Message for Formulas with Header.
   #
+  # @param [String] full_name formula full name to add with post install message
+  # @param [version] version formula version to add with post install message
   # @return [void]
-  def post_install(full_name, version)
-    ohai "Postinstalling #{Formatter.identifier(full_name)} #{version}"
-
-    compgen
-    ohai "Postinstalled: #{Formatter.success("compgen")}"
+  def post_format(full_name = nil, version = nil)
+    ohai "Postinstalling #{Formatter.identifier(full_name)} #{version}" unless full_name.nil?
   end
 
   # Install Cask or Formula if not Installed (and its container tap if not installed).

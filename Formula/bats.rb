@@ -5,15 +5,7 @@ require_relative "../lib/functions"
 require_relative "../lib/header"
 
 class Bats < Formula
-  @@header = Header.new(__FILE__)
-
-  desc @@header.desc
-  homepage @@header.homepage
-  url @@header.url, **@@header.using
-  sha256 @@header.sha256
-  license @@header.license
-  version @@header.version
-  head @@header.head, branch: @@header.branch 
+  Header.run(__FILE__, self)
 
   depends_on "bash"
   depends_on "bash-completion@2"
@@ -40,7 +32,7 @@ class Bats < Formula
   end
   
   def post_install
-    Functions::post_install(full_name, version)
+    Functions::compgen(full_name, version)
   end
   
   test do

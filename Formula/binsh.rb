@@ -9,15 +9,7 @@ require_relative "../lib/functions"
 require_relative "../lib/header"
 
 class Binsh < Formula
-  @@header = Header.new(__FILE__)
-  
-  desc @@header.desc
-  homepage @@header.homepage
-  url @@header.url, **@@header.using
-  sha256 @@header.sha256
-  license @@header.license
-  version @@header.version
-  head @@header.head, branch: @@header.branch 
+  Header.run(__FILE__, self)
 
   depends_on "asciidoctor" => :recommended
   depends_on "most" => :recommended
@@ -58,7 +50,7 @@ class Binsh < Formula
   end
   
   def post_install
-    Functions::post_install(full_name, version)
+    Functions::compgen(full_name, version)
 
     tool = "grc"
     if Functions::exists?(tool)
@@ -69,16 +61,14 @@ class Binsh < Formula
     
     tool = "whalebrew"
     if Functions::exists?(tool)
-      system `#{tool} completion bash > #{etc}/bash_completion.d/#{tool}.bash`
-      ohai "Postinstalled: #{Formatter.success(tool)}"
+      `#{tool} completion bash >> #{etc}/bash_completion.d/#{tool}`
+    else 
+      system "rm -f #{etc}/bash_completion.d/#{tool}"
     end
+    ohai "Postinstalled: #{Formatter.success(tool)}"
   end
   
-  def grc
-    Functions::exists?(__method__.to_s) && File.binread("#{Formula["grc"].pkgshare}/conf.dockerps").include? "on_blue"  
-  end
-  
-  if grc    
+  if Functions::exists?("grc") && (File.binread("#{Formula["grc"].pkgshare}/conf.dockerps").include? "on_blue")    
     def caveats
       <<~EOS
         "run `brew grc` to patch grc"

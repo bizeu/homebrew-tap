@@ -10,40 +10,25 @@ h = Header.new("Formula/binsh.rb"); h.hash     # main
 h = Header.new("Formula/secrets.rb"); h.hash   # tag (private) => url: api
 =end
 
-require "date"
-require "tap"
-require "uri"
-require 'utils/github'
-require 'utils/github/api'
+require "cask/config"
 
-require_relative "repo"
+=begin
+$ brew pry
 
-class Header
+h = Header.new("Casks/bats.rb"); h.hash        # main
+h = Header.new("Formula/bats.rb"); h.hash      # main
+h = Header.new("Formula/binsh.rb"); h.hash     # main
+h = Header.new("Formula/secrets.rb"); h.hash   # tag (private) => url: api
+=end
+
+class JetBrains
+
   extend T::Sig
-
-  # It's the same as {#name} in {Formula}.
-  attr_reader :file
   
-  # The fully-qualified name of the {Formula}.
-  # For core formula it's the same as {#name}.
-  # e.g. `homebrew/tap-name/this-formula`
-  attr_reader :full_name
-
-  # The name of the {Formula} from basename of {#file}. 
-  # It is the same as {#name} of the {Formula}.
-  # e.g. `this-formula`
-  attr_reader :name
-
-  # Instance of {Repo} from {#file}.
-  attr_reader :repo
-
-  # Instance of {Tap} from {#file}.
-  attr_reader :tap
+  APPDIR ||= Pathname.new(Cask::Config::DEFAULT_DIRS[:appdir]).freeze
+  CONFIG ||= Pathname.new("/Users/Shared#{name}").freeze
   
-  # The user name of the {Tap} from {#file}. 
-  # Usually, it's the GitHub username of the {Tap}'s remote repository.
-  attr_reader :user
-  
+
   def initialize(file = nil)
     @file = Pathname.new(file || caller(1).first.split(":")[0]).realpath
     @tap = Tap.from_path(@file)

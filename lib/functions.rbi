@@ -6,11 +6,11 @@ module Functions
 
   module_function
 
-  def compgen: () -> void
+  def compgen: (full_name: String | nil, version: String | nil) -> void
 
   def exists?: (ref: String | Pathname) -> bool
 
-  def post_install: () -> void
+  def post_format: (full_name: String | nil, version: String | nil) -> void
 
   def satisfy: (ref: String | Pathname, formula: bool = true) -> bool
 
