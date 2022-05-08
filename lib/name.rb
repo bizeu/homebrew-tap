@@ -14,4 +14,7 @@ class Jetbrains
     puts APPDIR
     puts CONFIG
   end
+  
+  def link
+  end
 end
