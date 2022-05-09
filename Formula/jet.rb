@@ -6,7 +6,7 @@ require_relative "../lib/header"
 require_relative "../lib/jetbrains"
 require_relative "../lib/reqs"
 
-class Tap < Formula
+class Jet < Formula
   Header.run(__FILE__, self)
 
   depends_on "bash"

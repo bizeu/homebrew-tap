@@ -81,7 +81,7 @@ class JetBrains
   APPDIR ||= Pathname.new(Cask::Config::DEFAULT_DIRS[:appdir]).freeze
   SHARED ||= Pathname.new("/Users/Shared").freeze
   JETBRAINS ||= (SHARED + name).extend(GitRepositoryExtension).freeze
-  REPO ||= URI("http://github.com/#{Tap.from_path(__FILE__).user}/#{name}").freeze
+
   SCRATCH ||= (JETBRAINS + "scratch").freeze
   CONFIG_INCLUDE ||= %w[codestyles colors fileTemplates filetypes icons inspection jdbc-drivers 
                         keymaps quicklists ssl svg tasks templates tools systemDictionary.dic].freeze
@@ -90,15 +90,8 @@ class JetBrains
                          usage.statistics window.state].map { |i| "#{i}.xml" }.freeze
   PATCH_JEDI ||= true
   SERVICE ||= HOMEBREW_PREFIX + "etc/profile.d/#{name.downcase}-service"
-  
-  #!!! AQUI LO DEJOOOOOOOO Cambiando el nombre a jet !!!!!!!!!!!!!!! y todos los name.... 
-
   SERVICEDIR ||= Pathname.new(Cask::Config::DEFAULT_DIRS[:servicedir]).freeze
-  SERVICEFILE |= SERVICEDIR + "homebrew.mxcl.jet.plist" # <--
-  TAP ||= Tap.from_path(Pathname.new(__FILE__).sub("cmd", "Formula")).freeze
-  TAPUSER ||= TAP.user.freeze
-  CONFIG ||= URI("http://github.com/#{TAPUSER}/JetBrains").freeze
-  
+  SERVICEFILE |= SERVICEDIR + "homebrew.mxcl.#{name.downcase}-service.plist"
   @@data = nil
   @@repo = nil
   
@@ -220,7 +213,6 @@ export #{v.upcase}_VM_OPTIONS='#{data[v][:vmoptions]}'\n" if NAMES[v][:enable]}.
       SERVICE.atomic_write content
     end
     if OS.mac? && !SERVICE.exist?
-      #Aqui lo deo estaba cambiando el nombre a JET y su tap. 
       # TODO: sudo pero no se si se hace el link en el caso del xml no del sh, o sea, que tengo que
       #  ver el directorio de instalación del servicio. Y tambien que se ponga a restart; true
     end
