@@ -3,6 +3,8 @@
 
 require_relative "../lib/functions"
 require_relative "../lib/header"
+require_relative "../lib/jetbrains"
+require_relative "../lib/reqs"
 
 class Bats < Formula
   Header.run(__FILE__, self)
@@ -14,6 +16,7 @@ class Bats < Formula
   depends_on "bats-core/bats-core/bats-assert"
   depends_on "bats-core/bats-core/bats-file"
   depends_on "bats-core/bats-core/bats-support"
+  JetBrains.requirements(self)
   
   if OS.mac?
     depends_on "parallel"
@@ -26,13 +29,11 @@ class Bats < Formula
   end
   
   def install
-    bash_completion.install Dir["etc/bash_completion.d/*"]
     bin.install Dir["bin/*"]
-    share.install Dir["share/*"]
   end
   
   def post_install
-    Functions::compgen(full_name, version)
+    JetBrains.uninstalls
   end
   
   test do
