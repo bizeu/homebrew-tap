@@ -6,7 +6,7 @@ require_relative "../lib/header"
 require_relative "../lib/jetbrains"
 require_relative "../lib/reqs"
 
-class Bats < Formula
+class Tap < Formula
   Header.run(__FILE__, self)
 
   depends_on "bash"
@@ -26,6 +26,11 @@ class Bats < Formula
 
   def verify_download_integrity(_fn)
     false
+  end
+  
+  service do
+    run [opt_bin/"#{JetBrains::GLOBALS}-service"]
+    keep_alive { launch_only_once: true }
   end
   
   def install

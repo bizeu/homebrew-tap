@@ -7,7 +7,7 @@ $ brew pry
 JetBrains::NAMES
 JetBrains.data
 JetBrains.enabled
-JetBrains.globals
+JetBrains.service
 JetBrains.installs
 JetBrains.links
 JetBrains.scripts
@@ -81,7 +81,10 @@ class JetBrains
   APPDIR ||= Pathname.new(Cask::Config::DEFAULT_DIRS[:appdir]).freeze
   SHARED ||= Pathname.new("/Users/Shared").freeze
   JETBRAINS ||= (SHARED + name).extend(GitRepositoryExtension).freeze
-  REPO ||= URI("http://github.com/#{Tap.from_path(__FILE__).user}/#{name}").freeze
+  TAP ||= Tap.from_path(__FILE__).freeze
+  TAP_USER ||= TAP.user.freeze
+  TAP_NAME ||= TAP.name.freeze
+  REPO ||= URI("http://github.com/#{TAP_USER}/#{name}").freeze
   SCRATCH ||= (JETBRAINS + "scratch").freeze
   CONFIG_INCLUDE ||= %w[codestyles colors fileTemplates filetypes icons inspection jdbc-drivers 
                         keymaps quicklists ssl svg tasks templates tools systemDictionary.dic].freeze
@@ -89,6 +92,9 @@ class JetBrains
                          other pluginAdvertiser recentProjects runner.layout updates 
                          usage.statistics window.state].map { |i| "#{i}.xml" }.freeze
   PATCH_JEDI ||= true
+  SERVICE ||= HOMEBREW_PREFIX + "etc/profile.d/#{name.downcase}-service"
+  SERVICEDIR ||= Pathname.new(Cask::Config::DEFAULT_DIRS[:servicedir]).freeze
+  SERVICEFILE |= SERVICEDIR + "homebrew.mxcl.#{name.downcase}-service.plist"
   @@data = nil
   @@repo = nil
   
@@ -200,11 +206,19 @@ class JetBrains
   # Globals for Applications
   #
   # sig { returns(Dict[String, Pathname]) }
-  def self.globals
-    @@globals ||= NAMES.keys.to_h { |name| [name, { 
-      "#{name.upcase}_PROPERTIES": data[name][:properties],
-      "#{name.upcase}_VM_OPTIONS": data[name][:vmoptions],
-    }] }
+  def self.service
+    content = NAMES.keys.map { |v| 
+      "export #{v.upcase}_PROPERTIES='#{data[v][:properties]}'
+export #{v.upcase}_VM_OPTIONS='#{data[v][:vmoptions]}'\n" if NAMES[v][:enable]}.compact.join()
+    old_content = SERVICE.exist? ? SERVICE.binread : ""
+    unless old_content.eql?(content)
+      ohai "Write #{SERVICE}"
+      SERVICE.atomic_write content
+    end
+    if OS.mac? && !SERVICE.exist?
+      # TODO: sudo pero no se si se hace el link en el caso del xml no del sh, o sea, que tengo que
+      #  ver el directorio de instalación del servicio. Y tambien que se ponga a restart; true
+    end
   end
 
   # Patch Jedi Term for Application
@@ -260,6 +274,8 @@ class JetBrains
     for name in NAMES.keys 
       self.new(name).install
     end
+    service
+
     nil
   end
   
@@ -618,7 +634,6 @@ SCRIPT_REMOTE
       name: name,
       data: data,
       enable?: enable?,
-      globals: self.class.globals[name],
     }
   end
   
