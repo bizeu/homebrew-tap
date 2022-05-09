@@ -233,7 +233,7 @@ export #{v.upcase}_VM_OPTIONS='#{data[v][:vmoptions]}'\n" if NAMES[v][:enable]}.
     return unless data[:jedi].exist?
     ext = data[:jedi].extname
     bak = data[:jedi].sub_ext("#{ext}.bak")
-    content="export /etc/profile"
+    content=". /etc/profile"
     
     if PATCH_JEDI
       FileUtils.cp(data[:jedi], bak) unless bak.exist?
