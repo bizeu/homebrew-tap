@@ -8,25 +8,33 @@ JetBrains::NAMES
 JetBrains.data
 JetBrains.enabled
 JetBrains.globals
+JetBrains.installs
 JetBrains.links
 JetBrains.scripts
+JetBrains.uninstalls
+JetBrains.unlinks
 
 app = JetBrains.new()
+JetBrains.new.data
 app.data
 app.enabled?
+JetBrains.new(:Toolbox).install
 JetBrains.new(:Idea).link
+JetBrains.new(:Toolbox).uninstall
+JetBrains.new(:Idea).unlink
 app.script
 
 =end
 
 require "cask/config"
+require "cli/named_args"
 require "extend/pathname"
 require "extend/git_repository"
 require "json"
 require "net/http"
-require "utils/git"
+require 'open3'
 require "utils/popen"
-
+require "uninstall"
 require_relative "reqs"
 
 class JetBrains
@@ -58,6 +66,7 @@ class JetBrains
                          other pluginAdvertiser recentProjects runner.layout updates 
                          usage.statistics window.state].map { |i| "#{i}.xml" }.freeze
   @@data = nil
+  @@repo = nil
   
   # Application. 
   attr_reader :name
@@ -165,43 +174,80 @@ class JetBrains
     }] }
   end
 
+  # Install Application if Enabled on Linux, link and scripts for both macOS and Linux
+  # JetBrains.new(:Toolbox).install
+  # 
+  # sig { returns(void) }
   def install
+    if ! OS.mac? && enable?
+    end
+    link
   end 
   
+  # Install All Enabled Applications on Linux, link and scripts for both macOS and Linux
+  # JetBrains.installs
+  # 
+  # sig { returns(void) }
   def self.installs 
+    for name in NAMES.keys 
+      self.new(name).install
+    end
+    nil
   end
   
   # Links Config for Application except DEFAULT (source)
-  # JetBrains.new(:Toolbox).link 
+  # JetBrains.new(:Toolbox).link
+  #
   # sig { returns(void) }
   def link
     self.class.repo
     data[:options].mkpath unless data[:options].exist?
     return if name == DEFAULT
     default = self.class.data[DEFAULT]
-    ohai default
+    
     default[:config].children.each do |src|
-      ohai src.basename
       basename = src.basename.to_s
-      ohai basename
-      ohai CONFIG_INCLUDE.include? basename
       next unless CONFIG_INCLUDE.include? basename
       dest = data[:config] + basename
-      ohai dest
+      
       if dest.exist? && (!dest.symlink? || dest.realpath != src.realpath)
         opoo "Unlink #{dest}"
-        dest.unlink
-      elsif !dest.exist?
+        dest.rmtree
+      end
+      
+      if !dest.exist?
         ohai "Link #{dest}"
         dest.make_relative_symlink(src)
-      else
-        nil
       end
     end
-    ohai "salgo"
+    
+    default[:options].children.each do |src|
+      basename = src.basename.to_s
+      next if OPTIONS_EXCLUDE.include? basename
+      dest = data[:options] + basename
+      
+      if dest.exist? && (!dest.symlink? || dest.realpath != src.realpath)
+        opoo "Unlink #{dest}"
+        dest.rmtree
+      end
+      
+      if !dest.exist?
+        ohai "Link #{dest}"
+        dest.make_relative_symlink(src)
+      end
+    end
+    nil
   end
 
+  # Links Config for All Application except DEFAULT (source)
+  # JetBrains.links
+  #
+  # sig { returns(void) }
   def self.links
+    for name in NAMES.keys 
+      self.new(name).link
+    end
+    nil
   end
   
   # Make SHARED and APPLICATIONS directories for Linux
@@ -216,25 +262,75 @@ class JetBrains
       odie "chown #{d}" unless system("sudo chown -R $(id -u):$(id -g) #{d}")
     end
   end
-    
-  # Links Config for All Applications
+
+  # Updates vmoptions and properties for the application
+  # JetBrains.new(:Toolbox).property
   #
   # sig { returns(void) }
-  def self.scripts
-    for name in NAMES.keys 
-       self.new(name).script
+  def property
+    self.class.repo
+    
+    data[:options].mkpath unless data[:options].exist?
+    return if name == DEFAULT
+    default = self.class.data[DEFAULT]
+    
+    default[:config].children.each do |src|
+      basename = src.basename.to_s
+      next unless CONFIG_INCLUDE.include? basename
+      dest = data[:config] + basename
+      
+      if dest.exist? && (!dest.symlink? || dest.realpath != src.realpath)
+        opoo "Unlink #{dest}"
+        dest.rmtree
+      end
+      
+      if !dest.exist?
+        ohai "Link #{dest}"
+        dest.make_relative_symlink(src)
+      end
     end
+    
+    default[:options].children.each do |src|
+      basename = src.basename.to_s
+      next if OPTIONS_EXCLUDE.include? basename
+      dest = data[:options] + basename
+      
+      if dest.exist? && (!dest.symlink? || dest.realpath != src.realpath)
+        opoo "Unlink #{dest}"
+        dest.rmtree
+      end
+      
+      if !dest.exist?
+        ohai "Link #{dest}"
+        dest.make_relative_symlink(src)
+      end
+    end
+    nil
   end
 
+  # Updates vmoptions and properties for all applications
+  # JetBrains.links
+  #
+  # sig { returns(void) }
+  def self.properties
+    for name in NAMES.keys 
+      self.new(name).property
+    end
+    nil
+  end
+    
   # Syncs JetBrains Repository
   # Utils::popen_read("git", "log").chomp.presence (for stdout)
+  #
   # sig { returns(void) }
   def self.repo
-    mkdirs
-    unless JETBRAINS.git?
-      ok = system(Utils::Git::git, "-C", SHARED, "clone", 
-                  "--quiet", "--depth", "1", "--branch", "main", REPO.to_s)
-      odie "Cloning: #{JETBRAINS}" unless ok
+    if @@repo.nil?
+      mkdirs
+      unless JETBRAINS.git?
+        _ = Functions::git("-C #{SHARED} clone --quiet --depth 1 --recursive --branch main #{REPO.to_s}")
+      end
+      nil
+      @@repo = true
     end
   end
   
@@ -252,6 +348,7 @@ class JetBrains
   #
   # sig { returns(void) }
   def script
+    self.class.repo
     data[:scripts].each_value do |s|
       if s[:src].exist?
         s[:dst].make_relative_symlink(s[:src]) unless s[:dst].symlink?
@@ -259,6 +356,7 @@ class JetBrains
         s[:dst].unlink
       end
     end
+    nil
   end
   
   # Links All Scripts for Applications Installed
@@ -268,19 +366,72 @@ class JetBrains
     for name in NAMES.keys 
        self.new(name).script
     end
+    nil
   end
 
-
-  def install
+  # UnInstall Application if Not Enabled on macOS & Linux
+  # JetBrains.new(:Toolbox).uninstall
+  # 
+  # sig { returns(void) }
+  def uninstall
+    return if enable?
+    if OS.mac?
+      cask_name = NAMES[name][:requirement]::NAME.downcase
+      cask = Cask::CaskLoader.load(cask_name)
+      Functions::cmd("brew uninstall --quiet #{cask_name}") if cask.installed?
+    end
+    script
   end 
   
-  def self.installs 
+  # UnInstall Applications if Not Enabled on macOS & Linux
+  # JetBrains.uninstalls
+  # 
+  # sig { returns(void) }
+  def self.uninstalls 
+    for name in NAMES.keys 
+      self.new(name).uninstall
+    end
+    nil
   end
   
+  # Unlinks Config for Application except DEFAULT (source)
+  # JetBrains.new(:Toolbox).unlink 
+  # sig { returns(void) }
   def unlink 
+    self.class.repo
+    data[:options].mkpath unless data[:options].exist?
+    return if name == DEFAULT
+    
+    data[:config].children.each do |dest|
+      if dest.symlink?
+        opoo "Unlink #{dest}"
+        dest.unlink
+      end
+    end
+    
+    data[:options].children.each do |dest|
+      if dest.symlink?
+        opoo "Unlink #{dest}"
+        dest.unlink
+      end
+    end
+    nil
   end
   
   def self.unlinks
+    for name in NAMES.keys 
+      self.new(name).unlink
+    end
+    nil
+  end
+  
+  def hash
+    { 
+      name: name,
+      data: data,
+      enable?: enable?,
+      globals: self.class.globals[name],
+    }
   end
   
   def to_s 

@@ -20,6 +20,7 @@ require "formula_installer"
 require "formulary"
 require "tap_constants"
 require "utils/formatter"
+require "utils/git"
 
 module Functions
   extend T::Sig
@@ -29,6 +30,19 @@ module Functions
   
   module_function
 
+  # Executes command returns output if success or exit with stderr
+  # thread.value.exitstatus == 0
+  #
+  # sig { returns(String) }
+  def cmd(command)
+    Open3.popen3(command) do |stdin, stdout, stderr, thread|
+      return stdout.read.chomp if thread.value.success?
+      odie stderr.read.chomp
+    end
+  rescue Errno::ENOENT => e
+    odie e
+  end
+  
   # Generate completions file (bash, zsh), updates cached brew subcommands and link taps completions.
   #
   # @param [String] full_name formula full name to add with post install message
@@ -60,11 +74,14 @@ module Functions
   def exists?(ref)
     name = ref.to_s.downcase
     tap!(name)
-#     if !File.exist?(name) && name =~ HOMEBREW_TAP_FORMULA_REGEX
-#       tap = Tap.fetch(Regexp.last_match(1), Regexp.last_match(2))
-#       tap.install(quiet: true) unless tap.installed?
-#     end
     Formulary.factory(name).any_version_installed?
+  end
+
+  # Executes homebrew git command returns output if success or exit with stderr
+  #
+  # sig { returns(String) }
+  def git(command)
+    cmd("#{Utils::Git::git} #{command}")
   end
   
   # Common Post Install Start Message for Formulas with Header.
@@ -84,13 +101,21 @@ module Functions
   def satisfy(ref, formula = true)
     name = ref.to_s.downcase
     if formula
-      Homebrew::Install.install_formulae(Formulary.factory(name), quiet: true) unless exists?(name)
+      begin
+        Homebrew::Install.install_formulae(Formulary.factory(name), quiet: true) unless exists?(name)
+      rescue
+        odie "Formula '#{name}'"
+      end
       exists?(name)
     else
       tap!(name)
       cask = Cask::CaskLoader.load(name)
       unless cask.installed?
-        Cask::Installer.new(cask, quarantine: false, quiet: true).install
+        begin
+          Cask::Installer.new(cask, quarantine: false, quiet: true).install
+        rescue
+          odie "Cask '#{name}'"
+        end
       end
       cask.installed?
     end

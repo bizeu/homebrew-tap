@@ -10,6 +10,7 @@ class JetBrains
   REPO: URI
   SCRATCH: Pathname
   @@data: Hash
+  @@repo: bool?
   attr_reader name: Symbol
   def initialize: (name: Symbol = ...) -> nil
   def data: () -> Hash
@@ -24,5 +25,6 @@ class JetBrains
   def self.requirements: (cls: Formula) -> nil
   def script: () -> nil
   def self.scripts: () -> nil
+  def hash: () -> Hash
   def to_s: () -> String
 end

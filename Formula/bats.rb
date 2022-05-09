@@ -36,6 +36,7 @@ class Bats < Formula
   
   def post_install
     Functions::compgen(full_name, version)
+    JetBrains.uninstalls
   end
   
   test do
