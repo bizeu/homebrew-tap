@@ -29,7 +29,8 @@ class Jet < Formula
   end
   
   service do
-    run [opt_bin/"#{JetBrains::GLOBALS}-service"]
+#     run [opt_bin/"#{JetBrains::GLOBALS}-service"]
+    run [opt_bin/"#{name.demodulize.downcase}-service"]
     keep_alive { launch_only_once: true }
   end
   
