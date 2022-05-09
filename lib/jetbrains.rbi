@@ -17,6 +17,8 @@ class JetBrains
   def enable?: () -> bool
   def self.enabled: () -> Array[Symbol]
   def self.globals: () -> Hash[String, String]
+  def link: () -> nil
+  def self.links: () -> nil
   def self.mkdirs: () -> nil
   def self.repo: () -> nil
   def self.requirements: (cls: Formula) -> nil

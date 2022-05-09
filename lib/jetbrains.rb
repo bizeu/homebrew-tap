@@ -8,11 +8,13 @@ JetBrains::NAMES
 JetBrains.data
 JetBrains.enabled
 JetBrains.globals
+JetBrains.links
 JetBrains.scripts
 
 app = JetBrains.new()
 app.data
 app.enabled?
+JetBrains.new(:Idea).link
 app.script
 
 =end
@@ -34,6 +36,7 @@ class JetBrains
   DEFAULT ||= :PyCharm
   NAMES ||= {
     AppCode: {enable: OS.mac? ? true : false, code: "AC", requirement: Reqs::AppCode, },
+    CLion: {enable: true, code: "CL", requirement: Reqs::CLion, },
     DataGrip: {enable: true, code: "DG", requirement: Reqs::DataGrip, },
     Gateway: {enable: true, code: "GW", app: OS.mac? ? "JetBrains Gateway" : nil, requirement: Reqs::Gateway, },
     GoLand: {enable: true, code: "GO", requirement: Reqs::GoLand, },
@@ -45,10 +48,15 @@ class JetBrains
   }
   API ||= URI("https://data.services.jetbrains.com/products/releases").freeze
   APPDIR ||= Pathname.new(Cask::Config::DEFAULT_DIRS[:appdir]).freeze
-  SHARED ||= Pathname.new("/Users/Shared/mierda").freeze
+  SHARED ||= Pathname.new("/Users/Shared").freeze
   JETBRAINS ||= (SHARED + name).extend(GitRepositoryExtension).freeze
   REPO ||= URI("http://github.com/#{Tap.from_path(__FILE__).user}/#{name}").freeze
   SCRATCH ||= (JETBRAINS + "scratch").freeze
+  CONFIG_INCLUDE ||= %w[codestyles colors fileTemplates filetypes icons inspection jdbc-drivers 
+                        keymaps quicklists ssl svg tasks templates tools systemDictionary.dic].freeze
+  OPTIONS_EXCLUDE ||= %w[actionSummary find gemmanager javaRuleManager jdk.table osFileIdePreferences 
+                         other pluginAdvertiser recentProjects runner.layout updates 
+                         usage.statistics window.state].map { |i| "#{i}.xml" }.freeze
   @@data = nil
   
   # Application. 
@@ -127,19 +135,6 @@ class JetBrains
     @@data
   end
 
-  # Make SHARED and APPLICATIONS directories for Linux
-  #
-  # sig { returns(bool) }
-  def self.mkdirs
-    return if OS.mac?
-    [APPDIR, SHARED].each do |d|
-      next if d.exist?
-      ENV["SUDOC"] = "/usr/bin/sudo"
-      odie "mkdir #{d}" unless system("sudo mkdir -p -m ugo+rwx #{d}")
-      odie "chown #{d}" unless system("sudo chown -R $(id -u):$(id -g) #{d}")
-    end
-  end
-  
   # Instance Method is app enabled?
   #
   # sig { returns(bool) }
@@ -168,6 +163,67 @@ class JetBrains
       "#{name.upcase}_PROPERTIES": data[name][:properties],
       "#{name.upcase}_VM_OPTIONS": data[name][:vmoptions],
     }] }
+  end
+
+  def install
+  end 
+  
+  def self.installs 
+  end
+  
+  # Links Config for Application except DEFAULT (source)
+  # JetBrains.new(:Toolbox).link 
+  # sig { returns(void) }
+  def link
+    self.class.repo
+    data[:options].mkpath unless data[:options].exist?
+    return if name == DEFAULT
+    default = self.class.data[DEFAULT]
+    ohai default
+    default[:config].children.each do |src|
+      ohai src.basename
+      basename = src.basename.to_s
+      ohai basename
+      ohai CONFIG_INCLUDE.include? basename
+      next unless CONFIG_INCLUDE.include? basename
+      dest = data[:config] + basename
+      ohai dest
+      if dest.exist? && (!dest.symlink? || dest.realpath != src.realpath)
+        opoo "Unlink #{dest}"
+        dest.unlink
+      elsif !dest.exist?
+        ohai "Link #{dest}"
+        dest.make_relative_symlink(src)
+      else
+        nil
+      end
+    end
+    ohai "salgo"
+  end
+
+  def self.links
+  end
+  
+  # Make SHARED and APPLICATIONS directories for Linux
+  #
+  # sig { returns(bool) }
+  def self.mkdirs
+    return if OS.mac?
+    [APPDIR, SHARED].each do |d|
+      next if d.exist?
+      ENV["SUDOC"] = "/usr/bin/sudo"
+      odie "mkdir #{d}" unless system("sudo mkdir -p -m ugo+rwx #{d}")
+      odie "chown #{d}" unless system("sudo chown -R $(id -u):$(id -g) #{d}")
+    end
+  end
+    
+  # Links Config for All Applications
+  #
+  # sig { returns(void) }
+  def self.scripts
+    for name in NAMES.keys 
+       self.new(name).script
+    end
   end
 
   # Syncs JetBrains Repository
@@ -212,6 +268,19 @@ class JetBrains
     for name in NAMES.keys 
        self.new(name).script
     end
+  end
+
+
+  def install
+  end 
+  
+  def self.installs 
+  end
+  
+  def unlink 
+  end
+  
+  def self.unlinks
   end
   
   def to_s 

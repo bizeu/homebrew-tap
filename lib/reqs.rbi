@@ -7,6 +7,8 @@
 module Reqs
   class AppCode < Requirement
   end
+  class CLion < Requirement
+  end
   class Docker < Requirement
   end
   class DataGrip < Requirement

@@ -12,7 +12,12 @@ module Reqs
     fatal true
     satisfy(build_env: false) { Functions::satisfy(name, false) }
   end
-  
+
+  class CLion < Requirement
+    fatal true
+    satisfy(build_env: false) { Functions::satisfy(name, false) }
+  end
+    
   class DataGrip < Requirement
     fatal true
     satisfy(build_env: false) { Functions::satisfy(name, false) }
