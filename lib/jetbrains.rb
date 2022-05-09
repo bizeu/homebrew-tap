@@ -81,10 +81,10 @@ class JetBrains
   APPDIR ||= Pathname.new(Cask::Config::DEFAULT_DIRS[:appdir]).freeze
   SHARED ||= Pathname.new("/Users/Shared").freeze
   JETBRAINS ||= (SHARED + name).extend(GitRepositoryExtension).freeze
-  TAP ||= Tap.from_path(__FILE__).freeze
-  TAP_USER ||= TAP.user.freeze
-  TAP_NAME ||= TAP.name.freeze
-  REPO ||= URI("http://github.com/#{TAP_USER}/#{name}").freeze
+  TAP ||= Tap.from_path(Pathname.new(__FILE__).sub("cmd", "Formula")).freeze
+  TAPUSER ||= TAP.user.freeze
+  !!! AQUI LO DEJOOOOOOOO Cambiando el nombre a jet !!!!!!!!!!!!!!! y todos los name.... 
+  REPO ||= URI("http://github.com/#{TAPUSER}/JetBrains").freeze
   SCRATCH ||= (JETBRAINS + "scratch").freeze
   CONFIG_INCLUDE ||= %w[codestyles colors fileTemplates filetypes icons inspection jdbc-drivers 
                         keymaps quicklists ssl svg tasks templates tools systemDictionary.dic].freeze
