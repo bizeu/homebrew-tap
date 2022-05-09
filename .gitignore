@@ -122,7 +122,6 @@ htmlcov/
 instance/
 ipython_config.py
 lib64/
-!lib/
 local_settings.py
 MANIFEST
 nosetests.xml
@@ -137,3 +136,20 @@ var/
 venv.bak/
 venv/
 wheels/
+
+### Ruby template
+*.gem
+*.rbc
+.byebug_history
+/.bundle/
+/.config
+/InstalledFiles
+/coverage/
+/lib/bundler/man/
+/pkg/
+/spec/examples.txt
+/spec/reports/
+/test/tmp/
+/test/version_tmp/
+/tmp/
+/vendor/bundle
