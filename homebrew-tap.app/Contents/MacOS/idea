@@ -1,0 +1,13 @@
+#!/bin/bash
+
+PROJECT_DIR="$(dirname "${0%.*}")"; export PROJECT_DIR
+PATH="$(brew --prefix ruby)/bin:${PROJECT_DIR}/bin:${PATH}"; export PATH
+contents="/Applications/IntelliJ IDEA.app/Contents"
+jedi="${contents}/plugins/terminal/jediterm-bash.in"
+line="source /etc/profile"
+test "$(cat "${jedi}")" = "${line}" || { mv "${jedi}" "${jedi}.bak" && echo "${line}" >> "${jedi}"; }
+
+"${contents}/MacOS/idea" "${PROJECT_DIR}"
+
+# TODO: meter el patch de jedi y de formatter en "toolbox" o sea un repository con esto, o dejarlo asi que se llame jetbrains
+#  y hacer el sync con un comando de este tio (de homebrew), probar que el grc se puede instalar con container de homebrew o no

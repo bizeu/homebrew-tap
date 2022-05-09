@@ -4,7 +4,8 @@
 require "requirement"
 
 require_relative "../lib/functions"
-require_relative '../lib/header'
+require_relative "../lib/header"
+require_relative "../lib/jetbrains"
 
 
 class Idea < Requirement
@@ -29,13 +30,8 @@ class Ide < Formula
   depends_on "grc"
   depends_on "j5pu/tap/bats"
   depends_on "j5pu/tap/binsh"
+  depends_on JetBrains.depends_on(self)
   
-  if OS.mac?
-    depends_on Idea
-    depends_on PyCharm
-    depends_on RubyMine
-  end
-
   def verify_download_integrity(_fn)
     false
   end

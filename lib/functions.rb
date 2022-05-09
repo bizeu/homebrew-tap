@@ -83,18 +83,9 @@ module Functions
   # @return [bool] true if cask/formula is installed
   def satisfy(ref, formula = true)
     name = ref.to_s.downcase
-#     if !File.exist?(name) && name =~ HOMEBREW_TAP_FORMULA_REGEX
-#       tap = Tap.fetch(Regexp.last_match(1), Regexp.last_match(2))
-#       tap.install(quiet: true) unless tap.installed?
-#     end
     if formula
       Homebrew::Install.install_formulae(Formulary.factory(name), quiet: true) unless exists?(name)
       exists?(name)
-#       formula = Formulary.factory(name)
-#       unless formula.any_version_installed?
-#         Homebrew::Install.install_formulae(formula, quiet: true)
-#       end
-#       formula.any_version_installed?
     else
       tap!(name)
       cask = Cask::CaskLoader.load(name)

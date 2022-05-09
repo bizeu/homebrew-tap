@@ -54,7 +54,6 @@ class Header
     @repo = Repo.new(@user, @name)
   end
 
-
   # Fills Formula Header
   #
   # sig { returns(bool) }
