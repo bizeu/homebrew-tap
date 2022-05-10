@@ -30,8 +30,8 @@ class Jet < Formula
   
   service do
 #     run [opt_bin/"#{JetBrains::GLOBALS}-service"]
-    run [opt_bin/"#{name.demodulize.downcase}-service"]
-    keep_alive { launch_only_once: true }
+    run [opt_bin/"jet-service"]
+    launch_only_once true
   end
   
   def install

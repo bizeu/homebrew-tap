@@ -89,15 +89,15 @@ class JetBrains
                          other pluginAdvertiser recentProjects runner.layout updates 
                          usage.statistics window.state].map { |i| "#{i}.xml" }.freeze
   PATCH_JEDI ||= true
-  SERVICE ||= HOMEBREW_PREFIX + "etc/profile.d/#{name.downcase}-service"
+  SERVICE ||= HOMEBREW_PREFIX + "etc/profile.d/jet-service"
   
   #!!! AQUI LO DEJOOOOOOOO Cambiando el nombre a jet !!!!!!!!!!!!!!! y todos los name.... 
 
   SERVICEDIR ||= Pathname.new(Cask::Config::DEFAULT_DIRS[:servicedir]).freeze
-  SERVICEFILE |= SERVICEDIR + "homebrew.mxcl.jet.plist" # <--
-  TAP ||= Tap.from_path(Pathname.new(__FILE__).sub("cmd", "Formula")).freeze
-  TAPUSER ||= TAP.user.freeze
-  CONFIG ||= URI("http://github.com/#{TAPUSER}/JetBrains").freeze
+  SERVICEFILE ||= (SERVICEDIR + "homebrew.mxcl.jet.plist").freeze # <--
+#   TAP ||= Tap.from_path(Pathname.new(__FILE__).sub("cmd", "Formula")).freeze
+#   TAPUSER ||= TAP.user.freeze
+#   CONFIG ||= URI("http://github.com/#{TAPUSER}/JetBrains").freeze
   
   @@data = nil
   @@repo = nil
