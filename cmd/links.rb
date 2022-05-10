@@ -23,6 +23,7 @@ module Homebrew
   end
 
   def links
+    JetBrains.writes 
     JetBrains.links 
   end
 end

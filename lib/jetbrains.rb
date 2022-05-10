@@ -77,6 +77,130 @@ class JetBrains
       enable: true, code: "WS", requirement: Reqs::WebStorm, Xms: 256, Xmx: 2000
     },
   }
+=begin
+CONFIG_INCLUDE ||= %w[codestyles colors fileTemplates filetypes icons inspection jdbc-drivers 
+                        keymaps quicklists ssl svg tasks templates tools systemDictionary.dic].freeze
+OPTIONS_EXCLUDE ||= %w[actionSummary editor gemmanager javaRuleManager jdk.table 
+                         other osFileIdePreferences recentProjects runner.layout updates 
+                         window.state].freeze
+=end 
+
+=begin 
+======CONFIG_EXCLUDE
+ssl
+======CONFIG_EXCLUDE
+=end 
+
+=begin 
+======OPTIONS_INCLUDE
+a-file-icons
+actionSummary
+advancedSettings
+applicationLibraries
+asciidoc
+atom-icon-associations
+aws
+baseRefactoring
+bashsupport-pro
+bashsupport-pro-folding
+bashsupport-pro.local
+cachedDictionary
+codestream
+color-highlighter
+colors.scheme
+completion.factors.user
+completionMLRanking
+console-font
+csv-plugin
+customization
+customPostfixTemplates
+databaseDrivers
+diff
+docker
+docker-registry
+editor
+editor-font
+features.usage.statistics
+FeatureSuggester
+fileEditorProviderManager
+FilenameTemplateSettings
+git_toolbox_2
+github
+github-copilot
+github-copilot.local
+GitLink
+grazie_global
+highlightTokenConfiguration-v2
+ide-features-trainer
+ide.general
+ignore
+images.support
+IntelliLang
+intentionSettings
+javaeeExternalResources
+javaRuleManager
+jdk.table
+laf
+log_highlighting
+mac
+MachineLearningCompletion
+macros
+magic-group
+markdown
+material_custom_theme
+material_theme
+MultiHighlight
+nativeTerminalPlugin
+NoteStashUserSettings
+notifications
+one_dark_config
+orchide-app
+osFileIdePreferences
+PackageRequirementsSettings
+packages
+path.macros
+pluginAdvertiser
+postfixTemplates
+project.default
+projectView
+pycrunch-jetbrains
+PyDocumentationSettings
+pySdk
+pyWelcome
+quick-file-preview
+rainbow-csv
+rainbow_brackets
+remote-servers
+ReSTService
+rInterpreterSettings
+runner.layout
+scratch_config
+security
+send-2-terminal-settings
+shared-indexes
+shownTips
+smartsearch
+sonarlint
+sshConfigs
+stringManipulation
+templates
+terminal
+TestRunnerService
+trusted-paths
+ui
+ui.lnf
+uml
+usage.statistics
+usageView
+vcs
+watcherDefaultTasks
+web-browsers
+web-types-npm-loader
+web-types-registry
+webServers
+
+======OPTIONS_INCLUDE
+=end
   API ||= URI("https://data.services.jetbrains.com/products/releases").freeze
   APPDIR ||= Pathname.new(Cask::Config::DEFAULT_DIRS[:appdir]).freeze
   SHARED ||= Pathname.new("/Users/Shared").freeze
@@ -84,10 +208,21 @@ class JetBrains
   REPO ||= URI("http://github.com/#{Tap.from_path(__FILE__).user}/#{name}").freeze
   SCRATCH ||= (JETBRAINS + "scratch").freeze
   CONFIG_INCLUDE ||= %w[codestyles colors fileTemplates filetypes icons inspection jdbc-drivers 
-                        keymaps quicklists ssl svg tasks templates tools systemDictionary.dic].freeze
-  OPTIONS_EXCLUDE ||= %w[actionSummary find gemmanager javaRuleManager jdk.table osFileIdePreferences 
-                         other pluginAdvertiser recentProjects runner.layout updates 
-                         usage.statistics window.state].map { |i| "#{i}.xml" }.freeze
+                        keymaps quicklists svg tasks templates tools systemDictionary.dic].freeze
+  OPTIONS_EXCLUDE ||= %w[
+debugger
+filetypes
+find
+gemmanager
+lightEdit
+nodejs
+other
+overrideFileTypes
+profilerRunConfigurations
+recentProjects
+updates
+window.state
+].map { |i| "#{i}.xml" }.freeze
   PATCH_JEDI ||= true
   SERVICE ||= HOMEBREW_PREFIX + "etc/profile.d/jet-service"
   
