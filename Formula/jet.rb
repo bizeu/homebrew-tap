@@ -29,9 +29,7 @@ class Jet < Formula
   end
   
   service do
-#     run [opt_bin/"#{JetBrains::GLOBALS}-service"]
     run [opt_bin/"jet-service"]
-    launch_only_once true
   end
   
   def install
