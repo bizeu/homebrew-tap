@@ -5,17 +5,10 @@
     <content url="file://$MODULE_DIR$">
       <sourceFolder url="file://$MODULE_DIR$" isTestSource="false" />
     </content>
-    <orderEntry type="jdk" jdkName="ruby-3.1.0-p0" jdkType="RUBY_SDK" />
-    <orderEntry type="sourceFolder" forTests="false" />
-    <orderEntry type="library" scope="PROVIDED" name="bundler (v2.3.10, ruby-3.1.0-p0) [gem]" level="application" />
   </component>
   <component name="PyDocumentationSettings">
     <option name="format" value="GOOGLE" />
     <option name="myDocStringFormat" value="Google" />
     <option name="renderExternalDocumentation" value="true" />
-  </component>
-  <component name="RModuleSettingsStorage">
-    <LOAD_PATH number="4" string0="/Users/../Homebrew" string1="$MODULE_DIR$/../../homebrew/homebrew-core" string2="$MODULE_DIR$/../../homebrew/homebrew-cask" string3="$MODULE_DIR$/../../homebrew/homebrew-services" />
-    <I18N_FOLDERS number="0" />
   </component>
 </module>

@@ -1,16 +1,15 @@
-# typed: true
-# frozen_string_literal: true
-
 =begin
-$ brew pry
+This module contains the Repo class.
 
-r = Repo.new("j5pu", "bats"); r.hash      # main
-r = Repo.new("j5pu", "secrets"); r.hash   # tag (private) => url: api
-r = Repo.new("bizeu", "release"); r.hash  # main (private) => url: api
-r = Repo.new("j5pu", "bindev"); r.hash    # tag
-r = Repo.new("bizeu", "shts"); r.hash     # release and tag (private) => url: api
+Examples
+
+  # brew pry
+  r = Repo.new("j5pu", "bats"); r.hash      #=> main
+  r = Repo.new("j5pu", "secrets"); r.hash   #=> tag (private) => url: api
+  r = Repo.new("bizeu", "release"); r.hash  #=> main (private) => url: api
+  r = Repo.new("j5pu", "bindev"); r.hash    #=> tag
+  r = Repo.new("bizeu", "shts"); r.hash     #=> release and tag (private) => url: api
 =end
-
 require "download_strategy"
 require "extend/pathname"
 require "uri"
@@ -21,12 +20,12 @@ require_relative "functions"
 class Repo
   extend T::Sig
 
-  # @param [String] name
   # Repository Name
+  # 
   attr_reader :name
 
-  # @param [String] user
-  # Repo Owner
+  # Repository Owner
+  # 
   attr_reader :user
 
   def initialize(user, name)
@@ -44,7 +43,7 @@ class Repo
   
   # Adds Subroutes to GitHub API Repos Repository URL.
   #
-  # @subroutes [String] subroutes to add to repos/:user/:repo/:subroutes
+  # @param [String] subroutes to add to repos/:user/:repo/:subroutes
   # @return [URI] url
   def api_repos_url(*subroutes)
      GitHub.url_to("repos", user, name, *subroutes)
@@ -59,7 +58,7 @@ class Repo
 
   # Download Cache Directory.
   #
-  # @return [:curl | :homebrew_curl] branch name
+  # @return [Pathname] cache directory
   def cache
     unless downloader.cached_location.exist?
       downloader.shutup!
@@ -77,14 +76,14 @@ class Repo
   
   # Repository Description.
   #
-  # @return [String] token
+  # @return [String] repository description
   def desc
     @desc ||= repo["description"]
   end
 
   # Downloaded Instance for URL.
   #
-  # @return [CurlDownloadStrategy | HomebrewCurlDownloadStrategy] url downloader instance
+  # @return [FossilDownloadStrategy | CurlDownloadStrategy | HomebrewCurlDownloadStrategy)] url downloader instance
   def downloader
     @downloader ||= DownloadStrategyDetector.detect_from_symbol(strategy).new(
       url, 
@@ -94,6 +93,9 @@ class Repo
     )
   end
 
+  # Request Headers with Authentication.
+  #
+  # @return [Hash[Symbol, Array[String]]] headers
   def headers
     if strategy == :homebrew_curl
       @headers ||= { headers: ["Accept: application/vnd.github.v3+json", "Authorization: token #{credentials}"]}
@@ -132,21 +134,21 @@ class Repo
 
   # No Tags in Repository Use Main or --HEAD.
   #
-  # @return [T::Boolean] true if no tags
+  # @return [Boolean] true if no tags
   def main?
     @head_only ||= tag == "v0.0.0"
   end
 
   # Is Private Repo?.
   #
-  # @return [T::Boolean] repos hash
+  # @return [Boolean] repos hash
   def private?
     @private ||= repo["private"]
   end
 
   # Latest Release Hash.
   #
-  # @return [T::Hash] release hash
+  # @return [Hash] release hash
   def release 
     @release ||= GitHub.get_latest_release(user, name)
   rescue GitHub::API::HTTPNotFoundError
@@ -155,7 +157,7 @@ class Repo
 
   # Api Repos Response for Repository Name.
   #
-  # @return [T.nilable(T::Hash)] repos hash
+  # @return [T::Hash] repos hash
   def repo 
     @repo ||= GitHub.repository(user, name)
   rescue GitHub::API::HTTPNotFoundError
@@ -180,7 +182,7 @@ class Repo
 
   # Short Commit SHA.
   #
-  # @return [String] short sha
+  # @return [T::String] short sha
   def sort 
     @sort ||= sha[0..6]
   end 
@@ -202,6 +204,7 @@ class Repo
   end
 
   # Download url
+  # 
   # HomebrewCurlDownloadStrategy gives Error if no version argument and version in url, so it requires brew curl 
   #   brew = HomebrewCurlDownloadStrategy.new(url="https://../tarbal/v0.0.0", name="secrets", version="", 
   #          meta={headers: [...], location: true, quiet: true})
@@ -220,7 +223,7 @@ class Repo
   
   # Version.
   #
-  # @return [String] version
+  # @return [T::String] version
   def version 
     @version ||= "#{tag}#{"-alpha+#{sha}" if main?}"
   end 
@@ -235,7 +238,10 @@ class Repo
     }
   end
   
-  def hash
+  # Hash With Instance Representation.
+  #
+  # @return [Hash[Symbol, void]]
+  def to_hash
     {
       api: api,
       branch: branch,

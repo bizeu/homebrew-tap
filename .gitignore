@@ -1,5 +1,5 @@
 .pry_history
-
+!/.bundle/
 ### Backup template
 *.bak
 *.gho
@@ -141,7 +141,6 @@ wheels/
 *.gem
 *.rbc
 .byebug_history
-/.bundle/
 /.config
 /InstalledFiles
 /coverage/

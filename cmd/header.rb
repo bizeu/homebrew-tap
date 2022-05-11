@@ -29,7 +29,7 @@ module Homebrew
   def header
     args = header_args.parse
     file = args.no_named? ? Tap.from_path(__FILE__).formula_files[0] : Formulary.resolve(args.named.first).path
-    puts JSON.pretty_generate(Header.new(file).hash)
+    puts JSON.pretty_generate(Header.new(file).to_hash)
   end
 end
 

@@ -1,15 +1,14 @@
-# typed: ignore
-# frozen_string_literal: true
-
 =begin
-$ brew pry
+This module contains the Header class which is used to create the Formula class
 
-h = Header.new("Casks/bats.rb"); h.hash        # main
-h = Header.new("Formula/bats.rb"); h.hash      # main
-h = Header.new("Formula/binsh.rb"); h.hash     # main
-h = Header.new("Formula/secrets.rb"); h.hash   # tag (private) => url: api
+Examples
+
+  # brew pry
+  h = Header.new("Casks/bats.rb"); h.hash        #=>  main
+  h = Header.new("Formula/bats.rb"); h.hash      #=>  main
+  h = Header.new("Formula/binsh.rb"); h.hash     #=>  main
+  h = Header.new("Formula/secrets.rb"); h.hash   #=>  tag (private) => url: api
 =end
-
 require "date"
 require "tap"
 require "uri"
@@ -44,8 +43,12 @@ class Header
   # Usually, it's the GitHub username of the {Tap}'s remote repository.
   attr_reader :user
   
-  def initialize(file = nil)
-    @file = Pathname.new(file || caller(1).first.split(":")[0]).realpath
+  # Data for {name}.
+  #
+  # @param [String] file of the {Formula}
+  # @return [nil]
+  def initialize(file)
+    @file = Pathname.new(file).realpath
     @tap = Tap.from_path(@file)
     @full_name = @tap.formula_file_to_name(@file)
     @user = @tap.user
@@ -154,7 +157,10 @@ class Header
     @version ||= repo.version
   end
 
-  def hash
+  # Hash With Instance Representation.
+  #
+  # @return [Hash[Symbol, void]]
+  def to_hash
     {
       branch: branch,
       cask?: cask?,
@@ -175,6 +181,9 @@ class Header
     }
   end
   
+  # Instance String.
+  #
+  # @return [String]
   def to_s
     hash.to_s
   end

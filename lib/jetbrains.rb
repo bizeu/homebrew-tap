@@ -1,31 +1,29 @@
-# typed: ignore
-# frozen_string_literal: true
-
 =begin
-$ brew pry
+This modules provides functionality to manage JetBrains products.
 
-JetBrains::NAMES
-JetBrains.data
-JetBrains.enabled
-JetBrains.service
-JetBrains.installs
-JetBrains.links
-JetBrains.scripts
-JetBrains.uninstalls
-JetBrains.unlinks
+Examples:
 
-app = JetBrains.new()
-JetBrains.new.data
-app.data
-app.enabled?
-JetBrains.new(:Toolbox).install
-JetBrains.new(:Idea).link
-JetBrains.new(:Toolbox).uninstall
-JetBrains.new(:Idea).unlink
-app.script
-
+  # $ brew pry
+  JetBrains::NAMES
+  JetBrains.data
+  JetBrains.enabled
+  JetBrains.service
+  JetBrains.installs
+  JetBrains.links
+  JetBrains.scripts
+  JetBrains.uninstalls
+  JetBrains.unlinks
+  
+  app = JetBrains.new()
+  JetBrains.new.data
+  app.data
+  app.enabled?
+  JetBrains.new(:Toolbox).install
+  JetBrains.new(:Idea).link
+  JetBrains.new(:Toolbox).uninstall
+  JetBrains.new(:Idea).unlink
+  app.script
 =end
-
 require "cask/config"
 require "cli/named_args"
 require "extend/pathname"
@@ -201,11 +199,11 @@ webServers
 
 ======OPTIONS_INCLUDE
 =end
-  API ||= URI("https://data.services.jetbrains.com/products/releases").freeze
+  API ||= URI.parse("https://data.services.jetbrains.com/products/releases").freeze
   APPDIR ||= Pathname.new(Cask::Config::DEFAULT_DIRS[:appdir]).freeze
   SHARED ||= Pathname.new("/Users/Shared").freeze
   JETBRAINS ||= (SHARED + name).extend(GitRepositoryExtension).freeze
-  REPO ||= URI("http://github.com/#{Tap.from_path(__FILE__).user}/#{name}").freeze
+  REPO ||= URI("https://github.com/#{Tap.from_path(__FILE__).user}/#{name}").freeze
   SCRATCH ||= (JETBRAINS + "scratch").freeze
   CONFIG_INCLUDE ||= %w[codestyles colors fileTemplates filetypes icons inspection jdbc-drivers 
                         keymaps quicklists svg tasks templates tools systemDictionary.dic].freeze
@@ -234,26 +232,28 @@ window.state
 #   TAPUSER ||= TAP.user.freeze
 #   CONFIG ||= URI("http://github.com/#{TAPUSER}/JetBrains").freeze
   
-  @@data = nil
-  @@repo = nil
   
-  # Application. 
+  # Application Name 
   attr_reader :name
-
+  
+  # Data for {#name} for {JetBrains}
+  #
+  # @param [Symbol] name command to execute
+  # @return [nil]
   def initialize(name = DEFAULT)
     @name = name
   end
 
-  # Data for :app.
+  # Data for Application.
   #
-  # sig { returns(Hash) }
+  # @return [Hash]
   def data 
     @data ||= self.class.data[name]
   end
   
   # Class Method for Data for all apps
   #
-  # sig { returns(Hash) }
+  # @return [Hash[Symbol, void]]
   def self.data
     if @@data.nil?
       bin = Pathname.new(HOMEBREW_PREFIX) + "bin"
@@ -324,31 +324,32 @@ window.state
 
   # Instance Method is app enabled?
   #
-  # sig { returns(bool) }
+  # @return [Boolean]
   def enable?
     self.class.enabled.include? name
   end
   
   # Class Method Enabled Applications
   #
-  # sig { returns(List[Symbol]) }
+  # @return [Array[Symbol]]
   def self.enabled
     @@enable ||= NAMES.map { |name, opts| name if opts[:enable] }.compact
   end
 
   # Homebrew git wrapper
   #
+  # @return [T::Boolean]
   def self.git(*args)
     system(Utils::Git::git, "-C", JETBRAINS.dirname, *args)
   end
   
   # Globals for Applications
   #
-  # sig { returns(Dict[String, Pathname]) }
+  # @return [nil]
   def self.service
     content = NAMES.keys.map { |v| 
       "export #{v.upcase}_PROPERTIES='#{data[v][:properties]}'
-export #{v.upcase}_VM_OPTIONS='#{data[v][:vmoptions]}'\n" if NAMES[v][:enable]}.compact.join()
+export #{v.upcase}_VM_OPTIONS='#{data[v][:vmoptions]}'\n" if NAMES[v][:enable]}.compact.join
     old_content = SERVICE.exist? ? SERVICE.binread : ""
     unless old_content.eql?(content)
       ohai "Write #{SERVICE}"
@@ -357,13 +358,13 @@ export #{v.upcase}_VM_OPTIONS='#{data[v][:vmoptions]}'\n" if NAMES[v][:enable]}.
     if OS.mac? && !SERVICE.exist?
       #Aqui lo deo estaba cambiando el nombre a JET y su tap. 
       # TODO: sudo pero no se si se hace el link en el caso del xml no del sh, o sea, que tengo que
-      #  ver el directorio de instalación del servicio. Y tambien que se ponga a restart; true
+      #  ver el directorio de instalación del servicio. Y también que se ponga a restart; true
     end
   end
 
   # Patch Jedi Term for Application
   #
-  # sig { returns(void) }
+  # @return [nil]
   def jedi
     return unless data[:jedi].exist?
     ext = data[:jedi].extname
@@ -387,18 +388,15 @@ export #{v.upcase}_VM_OPTIONS='#{data[v][:vmoptions]}'\n" if NAMES[v][:enable]}.
   # Patch Jedi Term for All Applications
   # JetBrains.installs
   # 
-  # sig { returns(void) }
+  # @return [nil]
   def self.jedis 
-    for name in NAMES.keys 
-      self.new(name).jedi
-    end
-    nil
+    NAMES.keys.cycle(1) { |name| self.new(name).jedi }
   end
   
   # Install Application if Enabled on Linux, link and scripts for both macOS and Linux
   # JetBrains.new(:Toolbox).install
   # 
-  # sig { returns(void) }
+  # @return [nil]
   def install
     if ! OS.mac? && enable?
     end
@@ -409,11 +407,11 @@ export #{v.upcase}_VM_OPTIONS='#{data[v][:vmoptions]}'\n" if NAMES[v][:enable]}.
   # Install All Enabled Applications on Linux, link and scripts for both macOS and Linux
   # JetBrains.installs
   # 
-  # sig { returns(void) }
+  # @return [nil]
   def self.installs 
-    for name in NAMES.keys 
+    NAMES.keys.each { |name|
       self.new(name).install
-    end
+    }
     service
 
     nil
@@ -422,7 +420,7 @@ export #{v.upcase}_VM_OPTIONS='#{data[v][:vmoptions]}'\n" if NAMES[v][:enable]}.
   # Links Config for Application except DEFAULT (source)
   # JetBrains.new(:Toolbox).link
   #
-  # sig { returns(void) }
+  # @return [nil]
   def link
     self.class.repo
     data[:options].mkpath unless data[:options].exist?
@@ -438,8 +436,8 @@ export #{v.upcase}_VM_OPTIONS='#{data[v][:vmoptions]}'\n" if NAMES[v][:enable]}.
         opoo "Unlink #{dest}"
         dest.rmtree
       end
-      
-      if !dest.exist?
+
+      unless dest.exist?
         ohai "Link #{dest}"
         dest.make_relative_symlink(src)
       end
@@ -454,8 +452,8 @@ export #{v.upcase}_VM_OPTIONS='#{data[v][:vmoptions]}'\n" if NAMES[v][:enable]}.
         opoo "Unlink #{dest}"
         dest.rmtree
       end
-      
-      if !dest.exist?
+
+      unless dest.exist?
         ohai "Link #{dest}"
         dest.make_relative_symlink(src)
       end
@@ -466,17 +464,17 @@ export #{v.upcase}_VM_OPTIONS='#{data[v][:vmoptions]}'\n" if NAMES[v][:enable]}.
   # Links Config for All Application except DEFAULT (source)
   # JetBrains.links
   #
-  # sig { returns(void) }
+  # @return [nil]
   def self.links
-    for name in NAMES.keys 
+    NAMES.keys.each { |name|
       self.new(name).link
-    end
+    }
     nil
   end
   
   # Make SHARED and APPLICATIONS directories for Linux
   #
-  # sig { returns(bool) }
+  # @return [nil]
   def self.mkdirs
     return if OS.mac?
     [APPDIR, SHARED].each do |d|
@@ -489,7 +487,7 @@ export #{v.upcase}_VM_OPTIONS='#{data[v][:vmoptions]}'\n" if NAMES[v][:enable]}.
   
   # Properties 
   #
-  # sig { returns(String) }
+  # @return [String]
   def properties
     <<~COMPLETION
     idea.config.path=#{data[:config]}
@@ -525,7 +523,7 @@ export #{v.upcase}_VM_OPTIONS='#{data[v][:vmoptions]}'\n" if NAMES[v][:enable]}.
   # Syncs JetBrains Repository
   # Utils::popen_read("git", "log").chomp.presence (for stdout)
   #
-  # sig { returns(void) }
+  # @return [Boolean]
   def self.repo
     if @@repo.nil?
       mkdirs
@@ -540,16 +538,17 @@ export #{v.upcase}_VM_OPTIONS='#{data[v][:vmoptions]}'\n" if NAMES[v][:enable]}.
   # Class Method for depends_on Requirements Block for macOS
   #
   # sig { returns(void) }
+  # @return [nil]
   def self.requirements(cls)
     return unless OS.mac?
-    for n in enabled
+    enabled.each { |n|
       cls.depends_on NAMES[n][:requirement]
-    end
+    }
   end
 
   # Links Scripts for Applications Installed or Removed Existing if No Application 
   #
-  # sig { returns(void) }
+  # @return [nil]
   def script
     self.class.repo
     data[:scripts].each_value do |s|
@@ -589,8 +588,11 @@ export #{v.upcase}_VM_OPTIONS='#{data[v][:vmoptions]}'\n" if NAMES[v][:enable]}.
   
   # <application>-remote script to install plugins in remote application for a project
   #
-  # sig { returns(void) }
-  def self.script_remote(symbol, plugins, remote_dev_server)
+  # @param [Symbol] symbol of the application
+  # @param [String] path to the application plugins meta directory
+  # @param [String] remote_dev_server executable path
+  # @return [String]
+ def self.script_remote(symbol, plugins, remote_dev_server)
       <<~SCRIPT_REMOTE
 #!/bin/sh
 # shellcheck disable=SC2046
@@ -648,22 +650,23 @@ SCRIPT_REMOTE
   
   # Links All Scripts for Applications Installed
   #
-  # sig { returns(void) }
+  # @return [nil]
   def self.scripts
-    for name in NAMES.keys 
-       self.new(name).script
-    end
+    NAMES.keys.each { |name|
+      self.new(name).script
+    }
     nil
   end
 
   # UnInstall Application if Not Enabled on macOS & Linux
   # JetBrains.new(:Toolbox).uninstall
   # 
-  # sig { returns(void) }
+  # @return [nil]
   def uninstall
     return if enable?
     if OS.mac?
       cask_name = NAMES[name][:requirement]::NAME.downcase
+      #noinspection RubyResolve
       cask = Cask::CaskLoader.load(cask_name)
       Functions::cmd("brew uninstall --quiet #{cask_name}") if cask.installed?
     end
@@ -673,17 +676,18 @@ SCRIPT_REMOTE
   # UnInstall Applications if Not Enabled on macOS & Linux
   # JetBrains.uninstalls
   # 
-  # sig { returns(void) }
+  # @return [nil]
   def self.uninstalls 
-    for name in NAMES.keys 
+    NAMES.keys.each { |name|
       self.new(name).uninstall
-    end
+    }
     nil
   end
   
   # Unlinks Config for Application except DEFAULT (source)
   # JetBrains.new(:Toolbox).unlink 
-  # sig { returns(void) }
+  # 
+  # @return [nil]
   def unlink 
     self.class.repo
     data[:options].mkpath unless data[:options].exist?
@@ -705,17 +709,21 @@ SCRIPT_REMOTE
     nil
   end
   
+  # Unlinks Config for All Applications except DEFAULT (source)
+  # JetBrains.new(:Toolbox).unlink 
+  # 
+  # @return [nil]
   def self.unlinks
-    for name in NAMES.keys 
+    NAMES.keys.each { |name|
       self.new(name).unlink
-    end
+    }
     nil
   end
 
   # VM Options for Application 
   # AppCode, CLion: -Xss, -XX:NewSize, -XX:MaxNewSize
   #
-  # sig { returns(String) }
+  # @return [String]
   def vmoptions
     <<~VMOPTIONS
     -Xms#{data[:Xms]}m
@@ -744,7 +752,7 @@ SCRIPT_REMOTE
   # Updates properties and vmoptions for the application
   # JetBrains.new(:Toolbox).write
   #
-  # sig { returns(void) }
+  # @return [nil]
   def write
     self.class.repo
     [:properties, :vmoptions].each do |type|
@@ -761,15 +769,18 @@ SCRIPT_REMOTE
   # Updates properties and vmoptions for all applications
   # JetBrains.writes
   #
-  # sig { returns(void) }
+  # @return [nil]
   def self.writes
-    for name in NAMES.keys 
+    NAMES.keys.each { |name|
       self.new(name).write
-    end
+    }
     nil
   end
   
-  def hash
+  # Hash With Instance Representation.
+  #
+  # @return [Hash[Symbol, void]]
+  def to_hash
     { 
       name: name,
       data: data,
