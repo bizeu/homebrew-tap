@@ -1,0 +1,9 @@
+#!/bin/bash
+
+PROJECT_DIR="$(dirname "${0%.*}")"; export PROJECT_DIR
+PATH="${PROJECT_DIR}/bin:${PATH}"; export PATH
+
+export PYCHARM_PROPERTIES='/Volumes/USB-2TB/Shared/JetBrains/config/PyCharm/.properties'
+export PYCHARM_VM_OPTIONS='/Volumes/USB-2TB/Shared/JetBrains/config/PyCharm/.vmoptions'
+
+/Applications/RubyMine.app/Contents/MacOS/rubymine "${PROJECT_DIR}"
