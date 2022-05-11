@@ -1,10 +1,9 @@
 # frozen_string_literal: true
 
-source "https://rubygems.org"
+source 'https://rubygems.org'
 
-if !ENV["HOMEBREW_GEMFILE"].nil? && File.exist?(ENV["HOMEBREW_GEMFILE"])
-  eval File.read(ENV["HOMEBREW_GEMFILE"]), nil, 'Gemfile'
-end
+HOMEBREW_GEMFILE = Pathname.pwd.join('.brew', 'Library', 'Homebrew', 'Gemfile')
+eval HOMEBREW_GEMFILE.read if HOMEBREW_GEMFILE.exist?
 
-gem "bundler"
-gem "pry"
+gem 'bundler'
+gem 'pry'

@@ -7,7 +7,7 @@
     <key>CFBundleGetInfoString</key>
     <string>homebrew-tap</string>
     <key>CFBundleIconFile</key>
-    <string>pycharm.icns</string>
+    <string>idea.icns</string>
     <key>CFBundleIdentifier</key>
     <string>com.mnopi.homebrew-tap</string>
     <key>CFBundleInfoDictionaryVersion</key>

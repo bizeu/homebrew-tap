@@ -85,7 +85,6 @@ Temporary Items
 *.sage.py
 *.so
 *.spec
-.cache
 .coverage
 .coverage.*
 .dmypy.json

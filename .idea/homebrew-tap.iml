@@ -4,7 +4,8 @@
     <exclude-output />
     <content url="file://$MODULE_DIR$">
       <sourceFolder url="file://$MODULE_DIR$" isTestSource="false" />
-      <excludeFolder url="file://$MODULE_DIR$/.bundle" />
+      <sourceFolder url="file://$MODULE_DIR$/.bundle/ruby/3.1.0" isTestSource="false" />
+      <excludeFolder url="file://$MODULE_DIR$/.tmp" />
     </content>
     <orderEntry type="jdk" jdkName="local" jdkType="RUBY_SDK" />
     <orderEntry type="sourceFolder" forTests="false" />

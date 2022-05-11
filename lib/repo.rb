@@ -1,3 +1,4 @@
+# typed: strict
 =begin
 This module contains the Repo class.
 

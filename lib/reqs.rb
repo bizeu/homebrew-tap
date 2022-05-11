@@ -1,7 +1,7 @@
-=begin
-This module contains the Cask Requirements Classes.
-=end
-# require "active_support"
+# typed: strict
+# frozen_string_literal: true
+# This module contains the Cask Requirements Classes.
+require "active_support"
 require "requirement"
 
 require_relative "functions"

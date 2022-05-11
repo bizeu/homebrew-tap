@@ -3,17 +3,17 @@
 <plist version="1.0">
   <dict>
     <key>CFBundleExecutable</key>
-    <string>pycharm</string>
+    <string>rubymine</string>
     <key>CFBundleGetInfoString</key>
-    <string>jet</string>
+    <string>rubymine</string>
     <key>CFBundleIconFile</key>
-    <string>pycharm.icns</string>
+    <string>rubymine.icns</string>
     <key>CFBundleIdentifier</key>
-    <string>com.mnopi.jet</string>
+    <string>com.mnopi.rubymine</string>
     <key>CFBundleInfoDictionaryVersion</key>
     <string>6.0</string>
     <key>CFBundleName</key>
-    <string>jet</string>
+    <string>rubymine</string>
     <key>CFBundlePackageType</key>
     <string>APPL</string>
     <key>CFBundleShortVersionString</key>

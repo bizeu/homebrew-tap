@@ -1,3 +1,4 @@
+# typed: false
 =begin
 This module contains the Header class which is used to create the Formula class
 
