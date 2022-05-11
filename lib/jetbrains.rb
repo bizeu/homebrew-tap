@@ -24,6 +24,7 @@ Examples:
   JetBrains.new(:Idea).unlink
   app.script
 =end
+require "global"
 require "cask/config"
 require "cli/named_args"
 require "extend/pathname"

@@ -19,6 +19,7 @@ GEM
       highline (~> 2.0.0)
     concurrent-ruby (1.1.10)
     connection_pool (2.2.5)
+    did_you_mean (1.6.1)
     diff-lcs (1.5.0)
     docile (1.4.0)
     domain_name (0.5.20190701)
@@ -78,8 +79,6 @@ GEM
     pry (0.14.1)
       coderay (~> 1.1)
       method_source (~> 1.0)
-    psych (4.0.3)
-      stringio
     public_suffix (4.0.7)
     racc (1.6.0)
     rack (2.2.3)
@@ -90,8 +89,6 @@ GEM
       sorbet-runtime (>= 0.5.9204)
       unparser
     rdiscount (2.2.0.2)
-    rdoc (6.4.0)
-      psych (>= 4.0.0)
     regexp_parser (2.4.0)
     rexml (3.2.5)
     ronn (0.7.3)
@@ -158,16 +155,15 @@ GEM
       simplecov (~> 0.19)
     simplecov-html (0.12.3)
     simplecov_json_formatter (0.1.4)
-    sorbet (0.5.9992)
-      sorbet-static (= 0.5.9992)
-    sorbet-runtime (0.5.9992)
+    sorbet (0.5.9995)
+      sorbet-static (= 0.5.9995)
+    sorbet-runtime (0.5.9995)
     sorbet-runtime-stub (0.2.0)
-    sorbet-static (0.5.9992-universal-darwin-21)
+    sorbet-static (0.5.9995-universal-darwin-21)
     spoom (1.1.11)
       sorbet (>= 0.5.9204)
       sorbet-runtime (>= 0.5.9204)
       thor (>= 0.19.2)
-    stringio (3.0.2)
     tapioca (0.7.2)
       bundler (>= 1.17.3)
       pry (>= 0.12.2)
@@ -207,6 +203,7 @@ DEPENDENCIES
   bundler
   byebug
   concurrent-ruby
+  did_you_mean
   json_schemer
   mechanize
   minitest
@@ -215,7 +212,6 @@ DEPENDENCIES
   patchelf
   plist
   pry
-  rdoc
   ronn
   rspec
   rspec-github

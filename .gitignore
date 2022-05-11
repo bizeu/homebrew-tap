@@ -1,5 +1,13 @@
 .pry_history
-!/.bundle/
+!.bundle/
+!/env/
+.brew
+.bundle/ruby
+.cache
+.logs
+.rbenv
+.tmp
+
 ### Backup template
 *.bak
 *.gho

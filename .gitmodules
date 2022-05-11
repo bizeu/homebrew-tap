@@ -1,0 +1,4 @@
+[submodule "rbenv"]
+	path = .rbenv
+	url = https://github.com/rbenv/rbenv.git
+	branch = master
