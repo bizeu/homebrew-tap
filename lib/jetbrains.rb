@@ -1,31 +1,6 @@
 # typed: ignore
-=begin
-This modules provides functionality to manage JetBrains products.
+# frozen_string_literal: true
 
-Examples:
-
-  # $ brew pry
-  JetBrains::NAMES
-  JetBrains.data
-  JetBrains.enabled
-  JetBrains.service
-  JetBrains.installs
-  JetBrains.links
-  JetBrains.scripts
-  JetBrains.uninstalls
-  JetBrains.unlinks
-  
-  app = JetBrains.new()
-  JetBrains.new.data
-  app.data
-  app.enabled?
-  JetBrains.new(:Toolbox).install
-  JetBrains.new(:Idea).link
-  JetBrains.new(:Toolbox).uninstall
-  JetBrains.new(:Idea).unlink
-  app.script
-=end
-puts Module.used_modules
 require 'global'
 require 'cask/config'
 require 'cli/named_args'
@@ -34,10 +9,35 @@ require 'extend/git_repository'
 require 'json'
 require 'net/http'
 require 'open3'
+require 'tap'
 require 'utils/popen'
 require 'uninstall'
 require_relative 'reqs'
 
+# This modules provides functionality to manage JetBrains products.
+#
+# Examples:
+#
+#   # $ brew pry
+#   JetBrains::NAMES
+#   JetBrains.data
+#   JetBrains.enabled
+#   JetBrains.service
+#   JetBrains.installs
+#   JetBrains.links
+#   JetBrains.scripts
+#   JetBrains.uninstalls
+#   JetBrains.unlinks
+#
+#   app = JetBrains.new()
+#   JetBrains.new.data
+#   app.data
+#   app.enabled?
+#   JetBrains.new(:Toolbox).install
+#   JetBrains.new(:Idea).link
+#   JetBrains.new(:Toolbox).uninstall
+#   JetBrains.new(:Idea).unlink
+#   app.script
 class JetBrains
 
   extend T::Sig
@@ -45,54 +45,54 @@ class JetBrains
   DEFAULT ||= :PyCharm
   NAMES ||= {
     AppCode: {
-      enable: OS.mac? ? true : false, code: 'AC', requirement: Reqs::AppCode, Xms: 256, Xmx: 2500,
+      enable: OS.mac? ? true : false, code: 'AC', requirement: Reqs::AppCode, Xms: 256, Xmx: 2500
     },
     CLion: {
-      enable: true, code: 'CL', requirement: Reqs::CLion, Xms: 256, Xmx: 2000, 
+      enable: true, code: 'CL', requirement: Reqs::CLion, Xms: 256, Xmx: 2000
     },
     DataGrip: {
-      enable: true, code: 'DG', requirement: Reqs::DataGrip, Xms: 128, Xmx: 750,
+      enable: true, code: 'DG', requirement: Reqs::DataGrip, Xms: 128, Xmx: 750
     },
     Gateway: {
-      enable: true, code: 'GW', app: OS.mac? ? 'JetBrains Gateway' : nil, 
-      requirement: Reqs::Gateway, Xms: 128, Xmx: 750, 
+      enable: true, code: 'GW', app: OS.mac? ? 'JetBrains Gateway' : nil,
+      requirement: Reqs::Gateway, Xms: 128, Xmx: 750
     },
     GoLand: {
-      enable: true, code: 'GO', requirement: Reqs::GoLand, Xms: 128, Xmx: 750, 
+      enable: true, code: 'GO', requirement: Reqs::GoLand, Xms: 128, Xmx: 750
     },
     Idea: {
-      enable: true, code: 'IIU', app: OS.mac? ? 'IntelliJ IDEA' : nil, 
-      requirement: Reqs::Idea, Xms: 256, Xmx: 4096,
+      enable: true, code: 'IIU', app: OS.mac? ? 'IntelliJ IDEA' : nil,
+      requirement: Reqs::Idea, Xms: 256, Xmx: 4096
     },
     PyCharm: {
-      enable: true, code: 'PCP', requirement: Reqs::PyCharm, Xms: 256, Xmx: 4096, 
+      enable: true, code: 'PCP', requirement: Reqs::PyCharm, Xms: 256, Xmx: 4096
     },
     RubyMine: {
-      enable: true, code: 'RM', requirement: Reqs::RubyMine, Xms: 256, Xmx: 2000,
+      enable: true, code: 'RM', requirement: Reqs::RubyMine, Xms: 256, Xmx: 2000
     },
     Toolbox: {
-      enable: true, code: 'TBA', app: OS.mac? ? 'JetBrains Toolbox' : nil, 
-      requirement: Reqs::Toolbox, Xms: 128, Xmx: 750, 
+      enable: true, code: 'TBA', app: OS.mac? ? 'JetBrains Toolbox' : nil,
+      requirement: Reqs::Toolbox, Xms: 128, Xmx: 750
     },
     WebStorm: {
       enable: true, code: 'WS', requirement: Reqs::WebStorm, Xms: 256, Xmx: 2000
-    },
-  }
+    }
+  }.freeze
 =begin
-CONFIG_INCLUDE ||= %w[codestyles colors fileTemplates filetypes icons inspection jdbc-drivers 
+CONFIG_INCLUDE ||= %w[codestyles colors fileTemplates filetypes icons inspection jdbc-drivers
                         keymaps quicklists ssl svg tasks templates tools systemDictionary.dic].freeze
-OPTIONS_EXCLUDE ||= %w[actionSummary editor gemmanager javaRuleManager jdk.table 
-                         other osFileIdePreferences recentProjects runner.layout updates 
+OPTIONS_EXCLUDE ||= %w[actionSummary editor gemmanager javaRuleManager jdk.table
+                         other osFileIdePreferences recentProjects runner.layout updates
                          window.state].freeze
-=end 
+=end
 
-=begin 
+=begin
 ======CONFIG_EXCLUDE
 ssl
 ======CONFIG_EXCLUDE
-=end 
+=end
 
-=begin 
+=begin
 ======OPTIONS_INCLUDE
 a-file-icons
 actionSummary
@@ -206,9 +206,9 @@ webServers
   APPDIR ||= Pathname.new(Cask::Config::DEFAULT_DIRS[:appdir]).freeze
   SHARED ||= Pathname.new('/Volumes/USB-2TB/Shared').freeze
   JETBRAINS ||= (SHARED + name).extend(GitRepositoryExtension).freeze
-  REPO ||= URI("https://github.com/#{Tap.from_path(__FILE__).user}/#{name}").freeze
-  SCRATCH ||= (JETBRAINS + 'scratch').freeze
-  CONFIG_INCLUDE ||= %w[codestyles colors fileTemplates filetypes icons inspection jdbc-drivers 
+  REPO ||= URI("https://github.com/j5pu/#{name}").freeze
+  SCRATCH ||= (JETBRAINS / 'scratch').freeze
+  CONFIG_INCLUDE ||= %w[codestyles colors fileTemplates filetypes icons inspection jdbc-drivers
                         keymaps quicklists svg tasks templates tools systemDictionary.dic].freeze
   OPTIONS_EXCLUDE ||= %w[
     debugger
@@ -225,12 +225,12 @@ webServers
     window.state
   ].map { |i| "#{i}.xml" }.freeze
   PATCH_JEDI ||= true
-  SERVICE ||= HOMEBREW_PREFIX + 'etc/profile.d/jet-service'
+  SERVICE ||= HOMEBREW_PREFIX / 'etc/profile.d/jet-service'
 
-  # !!! AQUI LO DEJOOOOOOOO Cambiando el nombre a jet !!!!!!!!!!!!!!! y todos los name.... 
+  # !!! AQUI LO DEJOOOOOOOO Cambiando el nombre a jet !!!!!!!!!!!!!!! y todos los name....
 
   SERVICEDIR ||= Pathname.new(Cask::Config::DEFAULT_DIRS[:servicedir]).freeze
-  SERVICEFILE ||= (SERVICEDIR + 'homebrew.mxcl.jet.plist').freeze # <--
+  SERVICEFILE ||= (SERVICEDIR / 'homebrew.mxcl.jet.plist').freeze # <--
 # TAP ||= Tap.from_path(Pathname.new(__FILE__).sub("cmd", "Formula")).freeze
 # TAPUSER ||= TAP.user.freeze
 # CONFIG ||= URI("http://github.com/#{TAPUSER}/JetBrains").freeze
@@ -258,68 +258,75 @@ webServers
   # @return [Hash[Symbol, void]]
   def self.data
     if @@data.nil?
-      bin = Pathname.new(HOMEBREW_PREFIX) + 'bin'
+      bin = Pathname.new(HOMEBREW_PREFIX) / 'bin'
       d = NAMES.keys.to_h do |n|
-            [n, { 
-        appdir: APPDIR + (NAMES[n].fetch(:app, n.to_s) + (OS.mac? ? '.app' : '')),
-        cache: JETBRAINS.join('cache', n.to_s),
-        config: JETBRAINS.join('config', n.to_s),
-        log: JETBRAINS.join('log', n.to_s),
-        plugins: JETBRAINS.join('plugins', n.to_s),
-      }] end
+        [
+          n, {
+            appdir: APPDIR / (NAMES[n].fetch(:app, n.to_s) + (OS.mac? ? '.app' : '')),
+            cache: JETBRAINS.join('cache', n.to_s),
+            config: JETBRAINS.join('config', n.to_s),
+            log: JETBRAINS.join('log', n.to_s),
+            plugins: JETBRAINS.join('plugins', n.to_s)
+          }
+        ]
+      end
 
-      NAMES.keys.each { |n|
+      NAMES.each_key do |n|
         lower = n.to_s.downcase
 
         d[n][:contents] = d[n][:appdir] + (OS.mac? ? 'Contents' : '')
-        plugins = d[n][:contents] + 'plugins'
-        d[n][:bin] = d[n][:contents] + 'bin'
+        plugins = d[n][:contents] / 'plugins'
+        d[n][:bin] = d[n][:contents] / 'bin'
         d[n][:exe] = {
           dst: bin + lower,
-          src: (OS.mac? ? d[n][:contents] + 'MacOS' : d[n][:bin]) + (lower + (OS.mac? ? '' : '.sh'))
+          src: (OS.mac? ? d[n][:contents] / 'MacOS' : d[n][:bin]) + (lower + (OS.mac? ? '' : '.sh'))
         }
-        d[n][:jedi] = plugins + 'terminal/jediterm-bash.in'
-        d[n][:options] = d[n][:config] + 'options'
-        d[n][:other] = d[n][:options] + 'other.xml'
-        d[n][:properties] = d[n][:config] + '.properties'
-        d[n][:vmoptions] = d[n][:config] + '.vmoptions'
+        d[n][:jedi] = plugins / 'terminal/jediterm-bash.in'
+        d[n][:options] = d[n][:config] / 'options'
+        d[n][:other] = d[n][:options] / 'other.xml'
+        d[n][:properties] = d[n][:config] / '.properties'
+        d[n][:vmoptions] = d[n][:config] / '.vmoptions'
         d[n][:Xms] = OS.mac? ? NAMES[n][:Xms] : 128
         d[n][:Xmx] = OS.mac? ? NAMES[n][:Xmx] : 750
 
         pr = n == :Toolbox ? 'jetbrains-' : ''
-        remote_dev_server = d[n][:bin] + 'remote-dev-server.sh'
+        remote_dev_server = d[n][:bin] / 'remote-dev-server.sh'
         d[n][:scripts] = {
           exe: {
             dst: bin + lower,
-            src: (OS.mac? ? d[n][:contents] + 'MacOS' : d[n][:bin]) + (pr + lower + (OS.mac? ? '' : '.sh')),
+            src: (OS.mac? ? d[n][:contents] / 'MacOS' : d[n][:bin]) + (pr + lower + (OS.mac? ? '' : '.sh'))
           },
           ltedit: {
-            dst: bin + (lower + '-ltedit'),
-            src: d[n][:bin] + 'ltedit.sh',
+            dst: bin + (lower / '-ltedit'),
+            src: d[n][:bin] / 'ltedit.sh'
           },
           remote: {
-            dst: bin + (lower + '-remote'),
-            src: remote_dev_server.exist? ? script_remote(n, d[n][:plugins].to_s, remote_dev_server.to_s) : nil,
+            dst: bin + (lower / '-remote'),
+            src: remote_dev_server.exist? ? script_remote(n, d[n][:plugins].to_s, remote_dev_server.to_s) : nil
           },
           remote_dev_server: {
-            dst: bin + (lower + '-remote-dev-server'),
-            src: remote_dev_server,
-          },
+            dst: bin + (lower / '-remote-dev-server'),
+            src: remote_dev_server
+          }
         }
 
-        if enabled.include? n
-          code = NAMES[n][:code]
-          uri = URI(API + "?#{{ code: code, latest: true, type: "release", }.to_query}")
-          res = Net::HTTP.get_response(uri)
-          odie "Failed to get response from #{uri}" unless res.is_a?(Net::HTTPSuccess)
-          platform = OS.mac? ? ("mac#{Hardware::CPU.intel? ? "" : "M1"}") : 'linux'
-          json = JSON.parse(res.body)[code][0]['downloads'][platform]
-          d[n][:url] = json['link']
-          res = Net::HTTP.get_response(URI(json['checksumLink']))
-          odie "Failed to get response from #{json["checksumLink"]}" unless res.is_a?(Net::HTTPSuccess)
-          d[n][:sha] = res.body.split(' ')[0]
-        end
-      }
+        next unless enabled.include? n
+
+        code = NAMES[n][:code]
+        uri = URI(API + "?#{{ code:, latest: true, type: 'release' }.to_query}")
+        res = Net::HTTP.get_response(uri)
+        odie "Failed to get response from #{uri}" unless res.is_a?(Net::HTTPSuccess)
+        platform = if OS.mac?
+                     "mac#{Hardware::CPU.intel? ? '' : 'M1'}"
+                   else
+                     'linux'
+                   end
+        json = JSON.parse(res.body)[code][0]['downloads'][platform]
+        d[n][:url] = json['link']
+        res = Net::HTTP.get_response(URI(json['checksumLink']))
+        odie "Failed to get response from #{json['checksumLink']}" unless res.is_a?(Net::HTTPSuccess)
+        d[n][:sha] = res.body.split(' ')[0]
+      end
       @@data = d
     end
     @@data
@@ -352,14 +359,15 @@ webServers
   def self.service
     content = NAMES.keys.map do |v|
       "export #{v.upcase}_PROPERTIES='#{data[v][:properties]}'
-export #{v.upcase}_VM_OPTIONS='#{data[v][:vmoptions]}'\n" if NAMES[v][:enable] end.compact.join
+export #{v.upcase}_VM_OPTIONS='#{data[v][:vmoptions]}'\n" if NAMES[v][:enable]
+end .compact.join
     old_content = SERVICE.exist? ? SERVICE.binread : ''
     unless old_content.eql?(content)
       ohai "Write #{SERVICE}"
       SERVICE.atomic_write content
     end
     if OS.mac? && !SERVICE.exist?
-      # Aqui lo deo estaba cambiando el nombre a JET y su tap. 
+      # Aqui lo deo estaba cambiando el nombre a JET y su tap.
       # TODO: sudo pero no se si se hace el link en el caso del xml no del sh, o sea, que tengo que
       #  ver el directorio de instalación del servicio. Y también que se ponga a restart; true
     end
@@ -381,11 +389,9 @@ export #{v.upcase}_VM_OPTIONS='#{data[v][:vmoptions]}'\n" if NAMES[v][:enable] e
         ohai "Patch #{data[:jedi]}"
         data[:jedi].atomic_write content
       end
-    else
-      if data[:jedi].binread.eql?(content)
-        ohai "Restore #{data[:jedi]}"
+    elsif data[:jedi].binread.eql?(content)
+      ohai "Restore #{data[:jedi]}"
         FileUtils.cp(bak, data[:jedi])
-      end
     end
   end
 
@@ -537,7 +543,7 @@ export #{v.upcase}_VM_OPTIONS='#{data[v][:vmoptions]}'\n" if NAMES[v][:enable] e
     if @@repo.nil?
       mkdirs
       unless JETBRAINS.git?
-        _ = Functions.git("-C #{SHARED} clone --quiet --depth 1 --recursive --branch main #{REPO.to_s}")
+        _ = Functions.git("-C #{SHARED} clone --quiet --depth 1 --recursive --branch main #{REPO}")
       end
       @@repo = true
     end
@@ -555,7 +561,7 @@ export #{v.upcase}_VM_OPTIONS='#{data[v][:vmoptions]}'\n" if NAMES[v][:enable] e
     end
   end
 
-  # Links Scripts for Applications Installed or Removed Existing if No Application 
+  # Links Scripts for Applications Installed or Removed Existing if No Application
   #
   # @return [nil]
   def script
@@ -576,9 +582,8 @@ export #{v.upcase}_VM_OPTIONS='#{data[v][:vmoptions]}'\n" if NAMES[v][:enable] e
           ohai "Link #{s[:dst]}"
           s[:dst].make_relative_symlink(s[:src])
         end
-      else
-        if s[:src].nil?
-          if s[:dst].exist?
+      elsif s[:src].nil?
+        if s[:dst].exist?
             ohai "Removing #{s[:dst]}"
             s[:dst].unlink
           end
@@ -589,7 +594,6 @@ export #{v.upcase}_VM_OPTIONS='#{data[v][:vmoptions]}'\n" if NAMES[v][:enable] e
             s[:dst].atomic_write s[:src]
             s[:dst].chmod(0755)
           end
-        end
       end
     end
     nil
@@ -601,13 +605,13 @@ export #{v.upcase}_VM_OPTIONS='#{data[v][:vmoptions]}'\n" if NAMES[v][:enable] e
   # @param [String] path to the application plugins meta directory
   # @param [String] remote_dev_server executable path
   # @return [String]
-  def self.script_remote(symbol, plugins, remote_dev_server) 
+  def self.script_remote(symbol, plugins, remote_dev_server)
     <<~SCRIPT_REMOTE
       #!/bin/sh
       # shellcheck disable=SC2046
 
       #
-      # installs plugins for project in #{symbol.to_s} remote dev server
+      # installs plugins for project in #{symbol} remote dev server
 
       set -eu
 
@@ -634,7 +638,7 @@ export #{v.upcase}_VM_OPTIONS='#{data[v][:vmoptions]}'\n" if NAMES[v][:enable] e
            or: ${0##*/} ids
          or: ${0##*/} names
 
-      installs plugins for project in #{symbol.to_s} remote dev server
+      installs plugins for project in #{symbol} remote dev server
 
       commands:
           -h, --help, help        show this help and exit
@@ -791,10 +795,10 @@ export #{v.upcase}_VM_OPTIONS='#{data[v][:vmoptions]}'\n" if NAMES[v][:enable] e
   #
   # @return [Hash[Symbol, void]]
   def to_hash
-    { 
-      name: name,
-      data: data,
-      enable?: enable?,
+    {
+      name:,
+      data:,
+      enable?: enable?
     }
   end
 

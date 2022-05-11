@@ -1,5 +1,12 @@
 Style/Documentation:
   Exclude:
+    - "lib/header.rb"
+    - "lib/jetbrains.rb"
+    - "lib/repo.rb"
+    - "lib/reqs.rb"
+    - "lib/header.rb"
+    - "lib/header.rb"
+    - "lib/header.rb"
     - "compat/**/*.rb"
     - "extend/**/*.rb"
     - "cmd/**/*.rb"

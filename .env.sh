@@ -1,6 +1,7 @@
 #!/bin/bash
 # shellcheck shell=bash
 
+unset BASH_ENV
 cd "$(dirname "${BASH_SOURCE[0]}")" || return 1
 
 export HOMEBREW_REQUIRED_RUBY_VERSION=3.1.0
@@ -32,3 +33,4 @@ export RUBYLIB="${PWD}:${HOMEBREW_MODULE}:${GEM_HOME}"
 #export LOAD_PATH="${RUBYLIB}"
 
 PATH="${PWD}/bin:${RBENV_ROOT}/bin:${GEM_HOME}/bin:${PATH}"
+

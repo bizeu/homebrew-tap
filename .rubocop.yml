@@ -1,30 +1,24 @@
+AllCops:
+  Exclude:
+    - '.brew/**'
+    - '.bundle/**'
+    - '.cache/**'
+    - '.idea/**'
+    - '.rbenv/**'
+    - '.tmp/**'
+    - 'backup/**'
+
 inherit_from:
   - .rubocop_todo.yml
-
-# make rspec formatting more flexible
-Layout/MultilineMethodCallIndentation:
-  Exclude:
-    - "**/*_spec.rb"
-
-# `formula do` uses nested method definitions
-Lint/NestedMethodDefinition:
-  Exclude:
-    - "test/**/*"
 
 Metrics/AbcSize:
   Max: 280
 Metrics/BlockLength:
   Max: 106
-  Exclude:
-    - "dev-cmd/bottle.rb"
-    - "test/**/*"
 Metrics/BlockNesting:
   Max: 5
 Metrics/ClassLength:
   Max: 800
-  Exclude:
-    - "formula.rb"
-    - "formula_installer.rb"
 Metrics/CyclomaticComplexity:
   Max: 80
 Metrics/PerceivedComplexity:
@@ -33,25 +27,16 @@ Metrics/MethodLength:
   Max: 260
 Metrics/ModuleLength:
   Max: 500
-  Exclude:
-    - "dev-cmd/bottle.rb"
-    - "test/**/*"
+
+Naming/MethodParameterName:
+  MinNameLength: 1
 
 Naming/PredicateName:
-  # Can't rename these.
   AllowedMethods:
     - is_a?
     - is_32_bit?
     - is_64_bit?
 
-Style/HashAsLastArrayItem:
-  Exclude:
-    - "test/utils/spdx_spec.rb"
-
 Style/BlockDelimiters:
   BracesRequiredMethods:
     - "sig"
-
-Bundler/GemFilename:
-  Exclude:
-    - "utils/gems.rb"

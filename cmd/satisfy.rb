@@ -22,12 +22,12 @@ module Homebrew
       switch '-f', '--formula', '--formulae',
              description: 'Treat named argument as formulae.'
 
-      named_args [:cask, :formula], number: 1
+      named_args %i[cask formula], number: 1
     end
   end
 
   def satisfy
     args = satisfy_args.parse
-    Functions::satisfy(args.named.first, args.formula?)
+    Functions.satisfy(args.named.first, formula: args.formula?)
   end
 end
