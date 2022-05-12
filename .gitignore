@@ -1,7 +1,7 @@
 .pry_history
 !.bundle/
 !/env/
-.brew/
+.brew
 .bundle/ruby
 .cache
 .logs
