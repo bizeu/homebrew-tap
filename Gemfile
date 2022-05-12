@@ -5,5 +5,6 @@ source 'https://rubygems.org'
 HOMEBREW_GEMFILE = Pathname.pwd.join('.brew', 'Library', 'Homebrew', 'Gemfile')
 eval HOMEBREW_GEMFILE.read if HOMEBREW_GEMFILE.exist?
 
+gem 'awesome_print'
 gem 'bundler'
 gem 'pry'

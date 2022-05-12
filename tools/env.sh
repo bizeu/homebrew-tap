@@ -6,9 +6,16 @@ cd "$(dirname "${BASH_SOURCE[0]}")" || return 1
 
 export HOMEBREW_REQUIRED_RUBY_VERSION=3.1.0
 
+brew list ruby &>/dev/null || brew install --quiet ruby
+brew install brew-gem
+brew vendor-gems
+brew vendor-install ruby  # Homebrew/vendor/portable-ruby
+gem install awesome_print
+
 eval "$(brew shellenv)"
 
 brew list ruby &>/dev/null || brew install --quiet ruby
+
 
 HOMEBREW_SYSTEM="$(uname -s)"; export HOMEBREW_SYSTEM
 if test "${HOMEBREW_SYSTEM}" = "Darwin"; then
@@ -28,12 +35,10 @@ export RBENV_ROOT=${PWD}/.rbenv
 export HOMEBREW_MODULE="${HOMEBREW_LIBRARY}/Homebrew"
 export HOMEBREW_GEMFILE="${HOMEBREW_MODULE}/Gemfile"
 
-eval "$("${RBENV_ROOT}/bin/rbenv" init -)"
-
 vendor="${PWD}/.bundle/ruby/${HOMEBREW_REQUIRED_RUBY_VERSION}"
 export GEM_HOME="${vendor}/gems"
 export GEM_PATH="${GEM_HOME}"
 export RUBYLIB="${PWD}:${HOMEBREW_MODULE}:${GEM_HOME}"
 
-PATH="${PWD}/bin:${GEM_HOME}/bin:${vendor}/bin:${RBENV_ROOT}/bin:${PATH}"
+PATH="${PWD}/bin:${GEM_HOME}/bin:${vendor}/bin:${PATH}"
 

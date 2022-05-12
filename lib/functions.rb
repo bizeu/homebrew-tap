@@ -104,7 +104,6 @@ module Functions
   # @param [T::Boolean] formula true if cask, false for formula
   # @return [T::Boolean] true if formula is installed
   def satisfy(ref, formula: true)
-    ohai "hola"
     name = ref.to_s.downcase
     if formula
       begin
