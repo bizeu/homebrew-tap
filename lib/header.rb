@@ -162,7 +162,7 @@ class Header
   # @return [Hash[Symbol, void]]
   def to_hash
     {
-      branch:,
+      branch: branch,
       cask?: cask?,
       desc:,
       file: file.to_s,
