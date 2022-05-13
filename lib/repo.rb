@@ -233,10 +233,10 @@ class Repo
 
   def debug
     {
-      repo:,
-      release:,
-      latest:,
-      downloader:,
+      repo: repo,
+      release: release,
+      latest: latest,
+      downloader: downloader,
       **hash
     }
   end
