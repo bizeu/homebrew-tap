@@ -164,20 +164,20 @@ class Header
     {
       branch: branch,
       cask?: cask?,
-      desc:,
+      desc: desc,
       file: file.to_s,
-      formula?: formula?,
-      full_name:,
-      head:,
-      homepage:,
-      license:,
-      name:,
-      sha256:,
-      strategy:,
+      formula: formula?,
+      full_name: full_name,
+      head: head,
+      homepage: homepage,
+      license: license,
+      name: name,
+      sha256: sha256,
+      strategy: strategy,
       tap: tap.to_s,
-      url:,
-      user:,
-      version:
+      url: url,
+      user: user,
+      version: version
     }
   end
 
