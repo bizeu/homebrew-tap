@@ -17,3 +17,5 @@ bundle update --bundler
 bundle install
 rbenv rehash
 
+HOMEBREW_FORCE_VENDOR_RUBY
+HOMEBREW_DEVELOPER

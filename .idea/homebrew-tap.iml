@@ -8,6 +8,7 @@
       <excludeFolder url="file://$MODULE_DIR$/.tmp" />
       <excludeFolder url="file://$MODULE_DIR$/.brew/Library/Homebrew/vendor/bundle/ruby/2.6.0/cache" />
       <excludeFolder url="file://$MODULE_DIR$/.brew/Library/Homebrew/vendor/bundle/ruby/2.6.0/gems/activesupport-6.1.6/lib/active_support/cache" />
+      <excludeFolder url="file://$MODULE_DIR$/.bundle" />
     </content>
     <orderEntry type="jdk" jdkName="local" jdkType="RUBY_SDK" />
     <orderEntry type="sourceFolder" forTests="false" />
