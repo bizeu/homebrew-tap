@@ -163,7 +163,7 @@ class Header
   def to_hash
     {
       branch: branch,
-      cask?: cask?,
+      cask: cask?,
       desc: desc,
       file: file.to_s,
       formula: formula?,
