@@ -246,26 +246,26 @@ class Repo
   # @return [Hash[Symbol, void]]
   def to_hash
     {
-      api:,
-      branch:,
-      cache:,
-      credentials:,
-      desc:,
-      head:,
-      homepage:,
-      license:,
-      main?: main?,
-      name:,
-      private?: private?,
+      api: api,
+      branch: branch,
+      cache: cache,
+      credentials: credentials,
+      desc: desc,
+      head: head,
+      homepage: homepage,
+      is_private: private?,
+      license: license,
+      main: main?,
+      name: name,
       repository: to_s,
-      sha:,
-      sha256:,
-      sort:,
-      strategy:,
-      tag:,
-      url:,
-      user:,
-      version:
+      sha: sha,
+      sha256: sha256,
+      sort: sort,
+      strategy: strategy,
+      tag: tag,
+      url: url,
+      user: user,
+      version: version
     }
   end
 
