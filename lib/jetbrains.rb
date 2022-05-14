@@ -313,7 +313,7 @@ webServers
         next unless enabled.include? n
 
         code = NAMES[n][:code]
-        uri = URI(API + "?#{{ code:, latest: true, type: 'release' }.to_query}")
+        uri = URI(API + "?#{{ code: code, latest: true, type: 'release' }.to_query}")
         res = Net::HTTP.get_response(uri)
         odie "Failed to get response from #{uri}" unless res.is_a?(Net::HTTPSuccess)
         platform = if OS.mac?
@@ -796,8 +796,8 @@ end .compact.join
   # @return [Hash[Symbol, void]]
   def to_hash
     {
-      name:,
-      data:,
+      name: name,
+      data: data,
       enable?: enable?
     }
   end

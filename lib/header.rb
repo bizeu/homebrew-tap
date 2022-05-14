@@ -188,3 +188,4 @@ class Header
     hash.to_s
   end
 end
+require "bundler/setup"
